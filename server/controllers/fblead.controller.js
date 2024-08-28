@@ -3,12 +3,12 @@ import nodemailer from 'nodemailer'
 import axios from 'axios'
 
 const addFBLead = async (req, res) => {
-    const { name, email, contact, city, message, sheetname } = req.body
+    const { name, email, contact, city, message, sheetname, fbid } = req.body
 
     try {
 
 
-        if (!name || !email || !message || !contact || !city || !sheetname) {
+        if (!name || !email || !message || !contact || !city || !sheetname || !fbid) {
             res.send({ success: false, message: "Missing FbLead Fields" })
         }
 
@@ -22,6 +22,7 @@ const addFBLead = async (req, res) => {
         }
 
         const leadData = new FBLead({
+            fbid,
             name,
             email,
             message,
@@ -30,16 +31,18 @@ const addFBLead = async (req, res) => {
             sheetname,
         })
 
-        const CRMResult = onCRMDataSubmit(data)
-        FBLeadMail(leadData)
-        if(CRMResult){
+            const CRMResult = onCRMDataSubmit(data)
+            FBLeadMail(leadData)
+            if(CRMResult){
 
-            await leadData.save()
-       
+                await leadData.save()
 
-        // res.send({success:true, message:"Add Patient Lead Data"})
+
+            // res.send({success:true, message:"Add Patient Lead Data"})
+            console.log({ success: true, message: "Add Patient Lead Data" })
+        }
         console.log({ success: true, message: "Add Patient Lead Data" })
-    }
+
     } catch (error) {
 
         // res.send({success:false,message:"Error"})
@@ -51,7 +54,7 @@ const addFBLead = async (req, res) => {
 
 const onCRMDataSubmit = async (data) => {
     console.log(data);
-    
+
     const url = 'https://ndayurveda.info/api/query/facebook'
 
     try {
@@ -110,8 +113,71 @@ const FBLeadMail = async (lead) => {
 }
 
 
-const getFBLead = async (req, res) => {
+const compareFBLead = async (req, res) => {
+    const dataArray = req.body
+    
+   
+    // console.log(dataArray);
+
+    try {
+        // Iterate over each sheet in dataArray
+        for (const sheetName in dataArray) {
+            const dataArraySheet = dataArray[sheetName];
+            
+            // Extract headers from the first row
+            const headers = dataArraySheet[0];
+            
+            // Iterate over each data row (skipping the first header row)
+            for (let i = 1; i < dataArraySheet.length; i++) {
+                const row = dataArraySheet[i];
+    
+                // Create an object with headers as keys and row values as values
+                const rowObject = {};
+                for (let j = 0; j < headers.length; j++) {
+                    rowObject[headers[j]] = row[j];
+                }
+    
+    
+                const fbid = rowObject.id;
+                const name = rowObject['full name'];
+                const email = rowObject.email;
+                const message = rowObject.message;
+                let s = rowObject.phone_number;
+                let number = s.match(/\d+/)[0];
+                const city = rowObject.city;
+                const sheetname = sheetName;
+           
+    
+                const addLeadData = new FBLead({
+                    fbid,
+                    name,
+                    email,
+                    message,
+                    contact:Number(number),
+                    city,
+                    sheetname // Corrected field name
+                });
+
+         
+                
+    
+                // Check if the entry with the given ID already exists in the database
+                const existingEntry = await FBLead.findOne({ fbid });
+    
+                // If the entry doesn't exist, insert it into the collection
+                if (!existingEntry) {
+                    await addLeadData.save(); // Insert addLeadData instead of rowObject
+                    console.log(`Inserted data with fbid: ${fbid}`);
+                } else {
+                    console.log(`Data with fbid: ${fbid} already exists.`);
+                }
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+    
 
 }
 
-export { addFBLead, getFBLead }
+export { addFBLead, compareFBLead }

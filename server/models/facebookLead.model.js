@@ -17,6 +17,10 @@ const fbLeadSchema= new mongoose.Schema({
         type:Number,
         required:true
     },
+    fbid:{
+        type:String,
+        required:true
+    },
     message:{
         type:String,
         required:true
