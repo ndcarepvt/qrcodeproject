@@ -39,7 +39,7 @@ const addFBLead = async (req, res) => {
         })
 
             const CRMResult = onCRMDataSubmit(data)
-            FBLeadMail(leadData)
+            FBLeadMail(data)
             if(CRMResult){
 
                 await leadData.save()
@@ -95,9 +95,9 @@ const FBLeadMail = async (lead) => {
     name: "${lead.name}",
     email: "${lead.email}",
     message: "${lead.message}",
-    phoneNumber: "${lead.phoneNumber}",
+    phoneNumber: "${lead.contact}",
     city: "${lead.city}",
-    sheetName: "${lead.sheetName}",
+    sheetName: "${lead.sheetname}",
 `
 
     async function main() {
