@@ -40,6 +40,8 @@ const Login = ({ signUp, setSignUp }) => {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault()
+    console.log(URL);
+    
     let newUrl = ""
     newUrl = URL + "/api/user/login"
 

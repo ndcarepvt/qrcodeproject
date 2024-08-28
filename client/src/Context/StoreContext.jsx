@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 export const storeContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-  const URL = process.env.DB_URI;
+  const URL = import.meta.env.VITE_BACKEND_URI;
   const [token, setToken] = useState("");
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
