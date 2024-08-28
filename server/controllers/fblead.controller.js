@@ -12,6 +12,13 @@ const addFBLead = async (req, res) => {
             res.send({ success: false, message: "Missing FbLead Fields" })
         }
 
+        const existingEntry = await FBLead.findOne({ fbid });
+    
+        
+        if (existingEntry) {
+            res.send({ success: false, message: `This Id ${fbid} Lead already Exist` })
+        } 
+
         const data = {
             name,
             email,
