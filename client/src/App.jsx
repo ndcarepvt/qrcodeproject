@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { storeContext } from './Context/StoreContext';
 import 'react-toastify/dist/ReactToastify.css';
+import 'dotenv/config'
 
 // Lazy load components
 const Navbar = lazy(() => import('./components/Navbar/Navbar'));

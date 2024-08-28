@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 export const storeContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-  const URL = "http://localhost:4000";
+  const URL = process.env.DB_URI;
   const [token, setToken] = useState("");
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
