@@ -10,7 +10,7 @@ import kycRouter from './routes/kyc.route.js'
 
 // config
 const app = express()
-const port = 4000 || process.env.PORT
+const port = process.env.PORT || 3000
 
 // middleWare
 app.use(cors())
