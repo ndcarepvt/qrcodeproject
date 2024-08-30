@@ -28,6 +28,26 @@ const fbLeadSchema= new mongoose.Schema({
     sheetname:{
         type:String,
         required:true
+    },
+    formname:{
+        type:String,
+        required:true
+    },
+    platform:{
+        type:String,
+        required:true,
+    },
+    adincharge:{
+        type:String,
+        required:true
+    },
+    country:{
+        type:String,
+        default:""
+    },
+    state:{
+        type:String,
+        default:""
     }
 },{timestamps:true})
 
