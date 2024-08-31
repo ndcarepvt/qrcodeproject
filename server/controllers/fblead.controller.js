@@ -28,15 +28,15 @@ const addFBLead = async (req, res) => {
         if (formname.toLowerCase().includes("kidney")) {
             formnameVal = "kidney"
             campaign = "Manual_Calling"
-            // sendOzentol(contact, campaign)
+            sendOzentol(contact, campaign)
         } else if (formname.toLowerCase().includes("autism")) {
             formnameVal = "autism"
             campaign = "Ivr_Common"
-            // sendOzentol(contact, campaign)
+            sendOzentol(contact, campaign)
         } else {
             formnameVal = "others"
             campaign = "Ivr_Common"
-            // sendOzentol(contact, campaign)
+            sendOzentol(contact, campaign)
         }
 
         const address = await onAddressHandler(city)
