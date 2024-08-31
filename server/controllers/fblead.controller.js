@@ -10,7 +10,6 @@ const addFBLead = async (req, res) => {
 
     try {
 
-
         if (!name || !email || !message || !contact || !city || !sheetname || !fbid || !platform || !formname || !adincharge) {
             console.log("Missing FbLead Fields");
             return res.send({ success: false, message: "Missing FbLead Fields" })
@@ -28,16 +27,16 @@ const addFBLead = async (req, res) => {
 
         if (formname.toLowerCase().includes("kidney")) {
             formnameVal = "kidney"
-            campaign = "Daily_Kidney"
-            sendOzentol(contact, campaign)
+            campaign = "Manual_Calling"
+            // sendOzentol(contact, campaign)
         } else if (formname.toLowerCase().includes("autism")) {
             formnameVal = "autism"
             campaign = "Ivr_Common"
-            sendOzentol(contact, campaign)
+            // sendOzentol(contact, campaign)
         } else {
             formnameVal = "others"
             campaign = "Ivr_Common"
-            sendOzentol(contact, campaign)
+            // sendOzentol(contact, campaign)
         }
 
         const address = await onAddressHandler(city)
@@ -123,24 +122,36 @@ const FBLeadMail = async (lead) => {
         }
     });
 
+
     const formattedData = `
-    name: "${lead.name}",
-    email: "${lead.email}",
-    message: "${lead.message}",
-    phoneNumber: "${lead.contact}",
-    city: "${lead.city}",
-    sheetName: "${lead.sheetname}",
-    platform: "${lead.platform}",
-    formname: "${lead.formname}",
-`
+        <p><strong>Name:</strong> ${lead.name}</p>
+        <p><strong>Email:</strong> ${lead.email}</p>
+        <p><strong>Message:</strong> ${lead.message}</p>
+        <p><strong>PhoneNumber:</strong> ${lead.contact}</p>
+        <p><strong>City:</strong> ${lead.city}</p>
+        <p><strong>SheetName:</strong> ${lead.sheetname}</p>
+        <p><strong>Platform:</strong> ${lead.platform}</p>
+        <p><strong>Formname:</strong> ${lead.formname}</p>
+        <p><strong>AdIncharge:</strong> ${lead.adincharge}</p>
+    `;
+
+let emailList = ""
+    if(lead.adincharge == "Naman"){
+        emailList = "sitedigital4@gmail.com, leadsfb78@gmail.com,"
+    } else if(lead.adincharge == "Raghav"){
+        emailList = "sitedigital4@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
+    }else {
+        emailList = "sitedigital4@gmail.com, leadsfb78@gmail.com,"
+    }
+
 
     async function main() {
         // send mail with defined transport object
         const info = await transporter.sendMail({
             from: 'githubndcare@gmail.com', // sender address
-            to: "sitedigital4@gmail.com, leadsfb78@gmail.com ", // list of receivers
-            subject: "FB Lead Patient Add Notify", // Subject line
-            text: formattedData, // plain text body
+            to: emailList, // list of receivers
+            subject: "India Add New Lead", // Subject line
+            html: formattedData, // plain text body
         });
 
         console.log("Message sent: %s", info.messageId);
@@ -201,8 +212,13 @@ const sendOzentol = async (number, campaign) => {
 const compareFBLead = async (req, res) => {
     const dataArray = req.body
 
+    let agentName = dataArray.agentName;
+    delete dataArray.agentName;
 
     console.log(dataArray);
+    console.log(agentName);
+
+
 
     try {
         // Iterate over each sheet in dataArray
@@ -222,7 +238,7 @@ const compareFBLead = async (req, res) => {
                 const rowObject = {};
                 for (let j = 0; j < headers.length; j++) {
                     rowObject[headers[j]] = row[j]
-                    
+
 
                 }
 
@@ -232,13 +248,35 @@ const compareFBLead = async (req, res) => {
                 const name = rowObject['full name'].toLowerCase();
                 const email = rowObject.email.toLowerCase();
                 const message = rowObject.message.toLowerCase();
-                let s = rowObject.phone_number;
-                let number = s.match(/\d+/)[0];
+
+                // convert p:+91xxxxxxxxxx into xxxxxxxxxx
+                let str = rowObject.phone_number;
+                let number = str.slice(-10);
                 const city = rowObject.city.toLowerCase();
                 const platform = rowObject.platform.toLowerCase()
                 const formname = rowObject.form_name.toLowerCase()
                 const sheetname = sheetName;
                 const address = await onAddressHandler(city)
+
+                let platformVal = ""
+
+                if (platform == "fb") {
+                    platformVal = "facebook"
+                  }
+                
+                  if (platform == "ig") {
+                    platformVal = "instagram"
+                  }
+
+                let formnameVal = ""
+
+                if (formname.toLowerCase().includes("kidney")) {
+                    formnameVal = "kidney"
+                } else if (formname.toLowerCase().includes("autism")) {
+                    formnameVal = "autism"
+                } else {
+                    formnameVal = "others"
+                }
 
                 if (address) {
 
@@ -252,8 +290,9 @@ const compareFBLead = async (req, res) => {
                         sheetname,
                         state: address.stateVal,
                         country: address.countryVal,
-                        platform,
-                        formname
+                        platform:platformVal,
+                        formname:formnameVal,
+                        adincharge: agentName
                         // Corrected field name
                     });
 
