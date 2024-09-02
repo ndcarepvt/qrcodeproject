@@ -3,89 +3,86 @@ import nodemailer from 'nodemailer'
 import axios from 'axios'
 
 const addFBLead = async (req, res) => {
-    const { name, email, contact, city, message, sheetname, fbid, platform, formname, adincharge } = req.body
-
-    // await FBLead.deleteMany({})
-    // console.log("Data Delete");
-
     try {
+        const {
+            name, email, contact, city, message, sheetname,
+            fbid, platform, formname, adincharge
+        } = req.body;
 
-        if (!name || !email || !message || !contact || !city || !sheetname || !fbid || !platform || !formname || !adincharge) {
-            console.log("Missing FbLead Fields");
-            return res.send({ success: false, message: "Missing FbLead Fields" })
+        // Validate required fields
+        if (![name, email, contact, city, message, sheetname, fbid, platform, formname, adincharge].every(Boolean)) {
+            console.error("Missing required fields");
+            return res.status(400).json({ success: false, message: "Missing required fields" });
         }
 
+        // Check for existing entry
         const existingEntry = await FBLead.findOne({ fbid });
-
         if (existingEntry) {
-            console.log(`This Id ${fbid} Lead already Exist`);
-            return res.send({ success: false, message: `This Id ${fbid} Lead already Exist` })
+            console.error(`Lead with ID ${fbid} already exists`);
+            return res.status(409).json({ success: false, message: `Lead with ID ${fbid} already exists` });
         }
 
-        let formnameVal = ""
-        let campaign = ""
+        // Determine form name and campaign
+        const formnameLower = formname.toLowerCase();
+        let formnameVal = "others";
+        let campaign = "Ivr_Common";
 
-        if (formname.toLowerCase().includes("kidney")) {
-            formnameVal = "kidney"
-            campaign = "Manual_Calling"
-            sendOzentol(contact, campaign)
-        } else if (formname.toLowerCase().includes("autism")) {
-            formnameVal = "autism"
-            campaign = "Ivr_Common"
-            sendOzentol(contact, campaign)
-        } else {
-            formnameVal = "others"
-            campaign = "Ivr_Common"
-            sendOzentol(contact, campaign)
+        if (formnameLower.includes("kidney")) {
+            formnameVal = "kidney";
+            campaign = "Manual_Calling";
+        } else if (formnameLower.includes("autism")) {
+            formnameVal = "autism";
         }
 
-        const address = await onAddressHandler(city)
+        // Send campaign details
+        await sendOzentol(contact, campaign);
 
+        // Handle address
+        const address = await onAddressHandler(city);
+
+        // Prepare CRM data
         const crmData = {
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact: contact,
+            contact,
             city: city.toLowerCase(),
             sheetname: sheetname.toLowerCase(),
-        }
+        };
 
-
-
+        // Prepare lead data
         const leadData = new FBLead({
             fbid,
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact: contact,
+            contact,
             city: city.toLowerCase(),
             sheetname: sheetname.toLowerCase(),
             platform: platform.toLowerCase(),
-            formname: formnameVal.toLowerCase(),
+            formname: formnameVal,
             adincharge,
             state: address.stateVal,
-            country: address.countryVal
-        })
+            country: address.countryVal,
+        });
 
-
-
-        const CRMResult = await onCRMDataSubmit(crmData)
-        await FBLeadMail(leadData)
+        // Submit CRM data and save lead
+        const CRMResult = await onCRMDataSubmit(crmData);
         if (CRMResult) {
-            await leadData.save()
-            console.log({ success: true, message: "Add Patient Lead Data" })
+            await leadData.save();
+            await FBLeadMail(leadData);
+            console.log("Patient Lead Data Added Successfully");
+            return res.status(201).json({ success: true, message: "Lead data added successfully" });
+        } else {
+            console.error("CRM data submission failed");
+            return res.status(500).json({ success: false, message: "CRM data submission failed" });
         }
-        // await leadData.save()
-        // console.log({ success: true, message: "Add Patient Lead Data" })
-
     } catch (error) {
-
-        console.log(error);
-        console.log({ success: false, message: "Error : Add Patient Lead Data" });
-
-
+        console.error("Error adding lead data:", error);
+        return res.status(500).json({ success: false, message: "An error occurred while adding lead data" });
     }
-}
+};
+
 
 const onCRMDataSubmit = async (data) => {
     console.log(data);
