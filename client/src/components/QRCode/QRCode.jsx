@@ -15,7 +15,7 @@ const QRCodeGen = () => {
   
 
   const onSubmitHandler = () => {
-    setValue(`http://localhost:5173/referpatient/${userData._id}`);
+    setValue(`https://qrcoderishtpusht.netlify.app/referpatient/${userData._id}`);
   };
 
   useEffect(()=>{
