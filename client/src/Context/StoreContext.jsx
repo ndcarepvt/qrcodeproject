@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 export const storeContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-  const URL = "http://162.248.100.13:3000/";
+  const URL = "http://162.248.100.13:3000";
   const [token, setToken] = useState("");
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null);

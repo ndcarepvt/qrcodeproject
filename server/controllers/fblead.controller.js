@@ -207,111 +207,95 @@ const sendOzentol = async (number, campaign) => {
 
 
 const compareFBLead = async (req, res) => {
-    const dataArray = req.body
-
-    let agentName = dataArray.agentName;
-    delete dataArray.agentName;
-
-    console.log(dataArray);
-    console.log(agentName);
-
-
-
     try {
-        // Iterate over each sheet in dataArray
+        const dataArray = req.body;
+        const agentName = dataArray.agentName;
+        delete dataArray.agentName;
+
+        if (!agentName) {
+            console.error("Missing agent name");
+            return res.status(400).json({ success: false, message: "Missing agent name" });
+        }
+
         for (const sheetName in dataArray) {
             const dataArraySheet = dataArray[sheetName];
-            // console.log(sheetName);
-            // console.log(dataArray);
 
-            // Extract headers from the first row
+            if (!Array.isArray(dataArraySheet) || dataArraySheet.length === 0) {
+                console.error(`Empty or invalid data for sheet: ${sheetName}`);
+                continue;
+            }
+
             const headers = dataArraySheet[0];
+            if (!Array.isArray(headers) || headers.length === 0) {
+                console.error(`Invalid headers for sheet: ${sheetName}`);
+                continue;
+            }
 
-            // Iterate over each data row (skipping the first header row)
             for (let i = 1; i < dataArraySheet.length; i++) {
                 const row = dataArraySheet[i];
-
-                // Create an object with headers as keys and row values as values
                 const rowObject = {};
+
                 for (let j = 0; j < headers.length; j++) {
-                    rowObject[headers[j]] = row[j]
-
-
+                    rowObject[headers[j].toLowerCase()] = row[j];
                 }
 
-                console.log(rowObject);
+                const { id, 'full name': fullName, email, message, phone_number: phoneNumber, city, platform, form_name: formName } = rowObject;
 
-                const fbid = rowObject.id.toLowerCase();
-                const name = rowObject['full name'].toLowerCase();
-                const email = rowObject.email.toLowerCase();
-                const message = rowObject.message.toLowerCase();
+                if (!id || !fullName || !email || !message || !phoneNumber || !city || !platform || !formName) {
+                    console.error(`Missing data in row ${i} for sheet: ${sheetName}`);
+                    continue;
+                }
 
-                // convert p:+91xxxxxxxxxx into xxxxxxxxxx
-                let str = rowObject.phone_number;
-                let number = str.slice(-10);
-                const city = rowObject.city.toLowerCase();
-                const platform = rowObject.platform.toLowerCase()
-                const formname = rowObject.form_name.toLowerCase()
-                const sheetname = sheetName;
-                const address = await onAddressHandler(city)
+                const fbid = id.toLowerCase();
+                const name = fullName.toLowerCase();
+                const emailLower = email.toLowerCase();
+                const messageLower = message.toLowerCase();
+                const contact = phoneNumber.slice(-10);
+                const cityLower = city.toLowerCase();
+                const platformLower = platform.toLowerCase();
+                const formnameLower = formName.toLowerCase();
 
-                let platformVal = ""
+                const platformVal = platformLower === "fb" ? "facebook" : platformLower === "ig" ? "instagram" : platformLower;
+                const formnameVal = formnameLower.includes("kidney") ? "kidney" : formnameLower.includes("autism") ? "autism" : "others";
 
-                if (platform == "fb") {
-                    platformVal = "facebook"
-                  }
-                
-                  if (platform == "ig") {
-                    platformVal = "instagram"
-                  }
+                const address = await onAddressHandler(cityLower);
+                if (!address) {
+                    console.error(`Invalid address for city: ${cityLower}`);
+                    continue;
+                }
 
-                let formnameVal = ""
+                const addLeadData = new FBLead({
+                    fbid,
+                    name,
+                    email: emailLower,
+                    message: messageLower,
+                    contact: Number(contact),
+                    city: cityLower,
+                    sheetname: sheetName,
+                    state: address.stateVal,
+                    country: address.countryVal,
+                    platform: platformVal,
+                    formname: formnameVal,
+                    adincharge: agentName
+                });
 
-                if (formname.toLowerCase().includes("kidney")) {
-                    formnameVal = "kidney"
-                } else if (formname.toLowerCase().includes("autism")) {
-                    formnameVal = "autism"
+                const existingEntry = await FBLead.findOne({ fbid });
+                if (!existingEntry) {
+                    await addLeadData.save();
+                    console.log(`Inserted data with fbid: ${fbid}`);
                 } else {
-                    formnameVal = "others"
-                }
-
-                if (address) {
-
-                    const addLeadData = new FBLead({
-                        fbid,
-                        name,
-                        email,
-                        message,
-                        contact: Number(number),
-                        city,
-                        sheetname,
-                        state: address.stateVal,
-                        country: address.countryVal,
-                        platform:platformVal,
-                        formname:formnameVal,
-                        adincharge: agentName
-                        // Corrected field name
-                    });
-
-
-                    // Check if the entry with the given ID already exists in the database
-                    const existingEntry = await FBLead.findOne({ fbid });
-
-                    // If the entry doesn't exist, insert it into the collection
-                    if (!existingEntry) {
-                        await addLeadData.save(); // Insert addLeadData instead of rowObject
-                        console.log(`Inserted data with fbid: ${fbid}`);
-                    } else {
-                        console.log(`Data with fbid: ${fbid} already exists.`);
-                    }
+                    console.log(`Data with fbid: ${fbid} already exists.`);
                 }
             }
         }
+
+        return res.status(200).json({ success: true, message: "Comparison and insertion process completed" });
+
     } catch (error) {
-        console.log(error);
+        console.error("Error during comparison and insertion process:", error);
+        return res.status(500).json({ success: false, message: "An error occurred during the process" });
     }
+};
 
-
-}
 
 export { addFBLead, compareFBLead }
