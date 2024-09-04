@@ -81,7 +81,7 @@ const ReferPatient = () => {
   return (
     <div className='flex md:h-screen my-0 bg-[#E9ECEF] p-10'>
       <div className='w-full py-5 flex flex-col md:justify-center items-center bg-white rounded-xl'>
-        <h1 className='text-[#081b2b] font-bold text-4xl mb-5'>Refer Patient</h1>
+        <h1 className='text-[#081b2b] font-bold text-4xl mb-5'>Rishtpusht Contact Form</h1>
         <form onSubmit={onSubmithandler} className='flex flex-col gap-4 w-[70%]'>
           <div className='flex flex-col md:flex-row gap-10'>
             <div className='flex flex-col gap-4 w-full'>
@@ -139,30 +139,72 @@ const ReferPatient = () => {
             </div>
             <div className='flex flex-col gap-4 w-full'>
               <div>
-                <p className='text-lg'><label htmlFor="state">State</label></p>
-                <input
-                  type="text"
+                <p><label
+                  htmlFor="state"
+                  className='text-xl font-semibold'>State *</label></p>
+                <select type="text"
                   id='state'
-                  required
-                  name="state"
+                  placeholder='Select State'
                   value={data.state}
-                  onChange={onChangeHandler}
-                  placeholder="Enter Your State"
-                  className="px-3 py-2 w-[100%] text-lg rounded-md bg-transparent border-2 border-solid border-slate-600"
-                />
+                  name="state"
+                  onChange={onChangeHandler} className='w-[250px] lg:w-[350px] border-2 border-solid border-[#081b2b] text-[#081b2b] py-1 px-2 rounded-sm outline-none bg-transparent' required autoComplete='off'>
+
+                  <option value=''>
+                    -- Select State --
+                  </option>
+                  <option value='Andhra Pradesh'>Andhra Pradesh</option>
+                  <option value='Arunachal Pradesh'>Arunachal Pradesh</option>
+                  <option value='Assam'>Assam</option>
+                  <option value='Bihar'>Bihar</option>
+                  <option value='Chhattisgarh'>Chhattisgarh</option>
+                  <option value='Goa'>Goa</option>
+                  <option value='Gujarat'>Gujarat</option>
+                  <option value='Haryana'>Haryana</option>
+                  <option value='Himachal Pradesh'>Himachal Pradesh</option>
+                  <option value='Jharkhand'>Jharkhand</option>
+                  <option value='Karnataka'>Karnataka</option>
+                  <option value='Kerala'>Kerala</option>
+                  <option value='Madhya Pradesh'>Madhya Pradesh</option>
+                  <option value='Maharashtra'>Maharashtra</option>
+                  <option value='Manipur'>Manipur</option>
+                  <option value='Meghalaya'>Meghalaya</option>
+                  <option value='Mizoram'>Mizoram</option>
+                  <option value='Nagaland'>Nagaland</option>
+                  <option value='Odisha'>Odisha</option>
+                  <option value='Punjab'>Punjab</option>
+                  <option value='Rajasthan'>Rajasthan</option>
+                  <option value='Sikkim'>Sikkim</option>
+                  <option value='Tamil Nadu'>Tamil Nadu</option>
+                  <option value='Telangana'>Telangana</option>
+                  <option value='Tripura'>Tripura</option>
+                  <option value='Uttar Pradesh'>Uttar Pradesh</option>
+                  <option value='Uttarakhand'>Uttarakhand</option>
+                  <option value='West Bengal'>West Bengal</option>
+                </select>
               </div>
               <div>
-                <p className='text-lg'><label htmlFor="Country">Country</label></p>
-                <input
-                  type="text"
-                  id='Country'
-                  required
-                  name="country"
+                <p><label htmlFor="country" className='text-xl font-semibold'>Country *</label></p>
+                <select type="text"
+                  id='country'
+                  placeholder='Select country'
                   value={data.country}
-                  onChange={onChangeHandler}
-                  placeholder="Enter Your Country"
-                  className="px-3 py-2 w-[100%] text-lg rounded-md bg-transparent border-2 border-solid border-slate-600"
-                />
+                  name="country"
+                  onChange={onChangeHandler} className='w-[250px] lg:w-[350px] border-2 border-solid border-[#081b2b] text-[#081b2b] py-1 px-2 rounded-sm outline-none bg-transparent' required autoComplete='off'>
+
+                  <option value=''>
+                    -- Select Country --
+                  </option>
+                  <option value='United States'>United States</option>
+                  <option value='China'>China</option>
+                  <option value='Japan'>Japan</option>
+                  <option value='Germany'>Germany</option>
+                  <option value='India'>India</option>
+                  <option value='United Kingdom'>United Kingdom</option>
+                  <option value='France'>France</option>
+                  <option value='Italy'>Italy</option>
+                  <option value='Canada'>Canada</option>
+                  <option value='Brazil'>Brazil</option>
+                </select>
               </div>
               <div>
                 <p className='text-lg'><label htmlFor="healthType">Type</label></p>
@@ -175,7 +217,7 @@ const ReferPatient = () => {
                 >
                   <option value="">-- Select Option --</option>
                   <option value="Healthy">Healthy</option>
-                  <option value="UnHealthy">UnHealthy</option>
+                  <option value="UnHealthy">Un-healthy</option>
                   <option value="Corporate">Corporate</option>
                 </select>
               </div>
