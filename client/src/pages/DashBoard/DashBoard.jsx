@@ -1,8 +1,8 @@
 import React, { memo, useContext, useEffect } from 'react';
 import { storeContext } from '../../Context/StoreContext';
-import QRCodeGen from '../../components/QRCode/QRCode';
 import { Link, useNavigate } from 'react-router-dom';
 import { assests } from '../../assets/assests';
+import QRCodeComponent from '../../components/QRCode/NewQR';
 
 const DashBoard = () => {
   const { token, userData, kyc } = useContext(storeContext);
@@ -38,9 +38,9 @@ const DashBoard = () => {
               </Link>
             </div>
             <h1 className='text-2xl font-bold '>QR Code</h1>
-            <div className='w-[250px]'>
+            <div className='w-[350px]'>
               <div className='m-2'>
-                <QRCodeGen />
+                <QRCodeComponent />
               </div>
             </div>
 
