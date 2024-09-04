@@ -81,7 +81,7 @@ const ReferPatient = () => {
   return (
     <div className='flex md:h-screen my-0 bg-[#E9ECEF] p-10'>
       <div className='w-full py-5 flex flex-col md:justify-center items-center bg-white rounded-xl'>
-        <h1 className='text-[#081b2b] font-bold text-4xl mb-5'>Rishtpusht Contact Form</h1>
+        <h1 className='text-[#081b2b] font-bold text-center text-4xl mb-5'>Rishtpusht Contact Form</h1>
         <form onSubmit={onSubmithandler} className='flex flex-col gap-4 w-[70%]'>
           <div className='flex flex-col md:flex-row gap-10'>
             <div className='flex flex-col gap-4 w-full'>
