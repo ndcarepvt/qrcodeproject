@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { memo, useContext, useEffect, useRef } from "react";
 import QRCodeStyling from "qr-code-styling";
 import { assests } from "../../assets/assests";
 import { storeContext } from "../../Context/StoreContext";
@@ -133,9 +133,9 @@ const QRCodeComponent = () => {
             // qrCode.download({ name: "qr", extension: "svg" });
 
             // Clean up the QR code on component unmount
-            return () => {
-                qrRef.current.innerHTML = "";
-            };
+            // return () => {
+            //     qrRef.current.innerHTML = "";
+            // };
         }
     }, [userData]);
 
@@ -165,4 +165,4 @@ const QRCodeComponent = () => {
     )
 };
 
-export default QRCodeComponent;
+export default memo(QRCodeComponent);

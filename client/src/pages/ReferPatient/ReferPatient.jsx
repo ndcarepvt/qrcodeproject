@@ -147,7 +147,7 @@ const ReferPatient = () => {
                   placeholder='Select State'
                   value={data.state}
                   name="state"
-                  onChange={onChangeHandler} className='w-[250px] lg:w-[350px] border-2 border-solid border-[#081b2b] text-[#081b2b] py-1 px-2 rounded-sm outline-none bg-transparent' required autoComplete='off'>
+                  onChange={onChangeHandler} className="px-3 py-2 w-[100%] text-lg rounded-md bg-transparent border-2 border-solid border-slate-600" required autoComplete='off'>
 
                   <option value=''>
                     -- Select State --
@@ -189,7 +189,7 @@ const ReferPatient = () => {
                   placeholder='Select country'
                   value={data.country}
                   name="country"
-                  onChange={onChangeHandler} className='w-[250px] lg:w-[350px] border-2 border-solid border-[#081b2b] text-[#081b2b] py-1 px-2 rounded-sm outline-none bg-transparent' required autoComplete='off'>
+                  onChange={onChangeHandler} className="px-3 py-2 w-[100%] text-lg rounded-md bg-transparent border-2 border-solid border-slate-600" required autoComplete='off'>
 
                   <option value=''>
                     -- Select Country --
