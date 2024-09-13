@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema({
     type:String,
     default:"incomplete"
   },
-  patientLead: {
+  patientNumberLead: {
     type: Array,
     default: []
   },

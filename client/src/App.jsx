@@ -24,6 +24,7 @@ const VendorEdit = lazy(() => import('./pages/Vendor/VendorEdit/VendorEdit'));
 const VendorDelete = lazy(() => import('./pages/Vendor/VendorDelete/VendorDelete'));
 const KycPage = lazy(() => import('./pages/KycPage/KycPage'));
 const PageNotFound = lazy(() => import('./pages/PageNotFound/PageNotFound'));
+const ReferPatientVerify = lazy(()=> import('./pages/ReferPatientVerify/ReferPatientVerify'))
 
 const App = () => {
   const { token } = useContext(storeContext);
@@ -72,6 +73,7 @@ const App = () => {
               )}
               
               <Route path={`${token ? "/referpatient" : "/referpatient/:usertoken"}`} element={<ReferPatient />} />
+              <Route path={`${token ? "" : "/referpatientverify/:userId"}`} element={<ReferPatientVerify />} />
               <Route path="*" element={<PageNotFound />} />
             </Routes>
           </Suspense>

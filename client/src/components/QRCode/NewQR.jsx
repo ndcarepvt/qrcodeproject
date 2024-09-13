@@ -15,7 +15,7 @@ const QRCodeComponent = () => {
 
                 width: 300,
                 height: 300,
-                data: `https://affiliaterishtpusht.netlify.app/referpatient/${userData._id}`,
+                data: `https://localhost:5173/referpatientverify/${userData._id}`,
                 margin: 3,
                 qrOptions: {
                     typeNumber: "0",

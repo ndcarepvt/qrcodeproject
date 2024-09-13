@@ -9,6 +9,8 @@ const addFBLead = async (req, res) => {
             fbid, platform, formname, adincharge
         } = req.body;
 
+        console.log(req.body)
+
         // Validate required fields
         if (![name, email, contact, city, message, sheetname, fbid, platform, formname, adincharge].every(Boolean)) {
             console.error("Missing required fields");
@@ -136,6 +138,7 @@ let emailList = ""
     if(lead.adincharge == "Naman"){
         emailList = "sitedigital4@gmail.com, leadsfb78@gmail.com,"
     } else if(lead.adincharge == "Raghav"){
+        // emailList = "sitedigital4@gmail.com"
         emailList = "sitedigital4@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
     }else {
         emailList = "sitedigital4@gmail.com, leadsfb78@gmail.com,"

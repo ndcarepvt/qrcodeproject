@@ -1,101 +1,93 @@
 import { Patient } from "../models/patient.model.js";
 import { User } from "../models/user.model.js";
 import validator from "validator";
-
-// const addPatient = async (req, res) =>{
-//     const {name, emailId, phoneNumber, healthType, patientId,city, disease,  state , userId, country } = req.body
-//     console.log(userId);
-//     try {
-      
-//         const user = await User.findOne({_id:userId})
-//         console.log(user);
-        
-//         let patientLead = user.patientLead
-        
-//         if(healthType == "Corporate"){
-//             let patientId = await getNextPatientId(healthType)
-//             patientLead.push(patientId)
-//         } else {
-//             patientLead.push(patientId)
-//         }
+import axios from 'axios'
 
 
-//         if(!validator.isEmail(emailId)){
-//             res.send({success:false,message:"Enter valid Email"})
-//         }
-
-//         const newPatient = new Patient({
-//             name:name,
-//             email:emailId,
-//             phoneNumber:phoneNumber,
-//             city:city,
-//             state:state,
-//             country:country,
-//             disease:disease,
-//             patientId:patientId,
-//             healthType:healthType
-//         })
-
-        
-//         const patient = await newPatient.save()
-//         await User.findByIdAndUpdate(user._id,{patientLead})
-//         res.send({success:true, message:"Patient Added",})
-//         // const token = generateToken(user._id)
-//     } catch (error) {
-//         console.log(error)
-//         res.json({success:false ,message:"Error"})
-//     }
-// }
 
 const addPatient = async (req, res) => {
     const { name, emailId, phoneNumber, healthType, patientId, city, disease, state, userId, country } = req.body;
 
-    if (!userId || !validator.isEmail(emailId)) {
-        return res.status(400).send({ success: false, message: "Invalid input data" });
-    }
-
     try {
-        // Fetch user and validate if it exists
-        const user = await User.findOne({_id:userId});
+        // Find existing patient by phoneNumber
+        const existingPatient = await Patient.findOne({ phoneNumber });
+
+        // Find user by userId
+        const user = await User.findOne({ _id: userId });
+
+        // Check if user exists
         if (!user) {
             return res.status(404).send({ success: false, message: "User not found" });
         }
 
-        let patientLead = user.patientLead;
-        let newPatientId = ""
 
-        // Generate new patientId if healthType is "Corporate"
-        if (healthType === "Corporate") {
-            newPatientId = await getNextPatientId(healthType);
-            patientLead.push(newPatientId);
+
+        if (existingPatient) {
+            // Check if the patient's status is 1
+            if (existingPatient.status === 1) {
+                return res.send({ success: false, message: "Details already filled" });
+            }
+
+            // Check if phoneNumber already exists in user's patientNumberLead
+            if (!(user.patientNumberLead.includes(phoneNumber))) {
+                // Update user's patient lead list
+                user.patientNumberLead.push(phoneNumber);
+                await user.save();
+            }
+
+
+            // Generate new patient ID if healthType is "Corporate"
+            let newPatientId = "";
+            if (healthType === "Corporate") {
+                newPatientId = await getNextPatientId(healthType);
+            }
+
+            // Update patient details
+            existingPatient.name = name;
+            existingPatient.email = emailId;
+            existingPatient.city = city;
+            existingPatient.state = state;
+            existingPatient.country = country;
+            existingPatient.disease = disease;
+            existingPatient.patientId = healthType === "Corporate" ? newPatientId : patientId;
+            existingPatient.healthType = healthType;
+            existingPatient.refId = userId;
+            existingPatient.status = 1;
+
+            // Save updated patient
+            await existingPatient.save();
+
+            return res.send({ success: true, message: "Patient details updated successfully" });
+
         } else {
-            patientLead.push(patientId);
+            // If patient does not exist, create a new one
+
+            // Update user's patient lead list
+            user.patientNumberLead.push(phoneNumber);
+            await user.save();
+
+            
+
+            // Create new patient instance
+            const newPatient = new Patient({
+                phoneNumber: phoneNumber,
+                city: city,
+                state: state,
+                country: country,
+                refId: userId,
+            });
+
+            // Save new patient to database
+            await newPatient.save();
+
+            return res.send({ success: true, message: "Patient added successfully" });
         }
-
-        // Create new patient instance
-        const newPatient = new Patient({
-            name: name,
-            email: emailId,
-            phoneNumber: phoneNumber,
-            city: city,
-            state: state,
-            country: country,
-            disease: disease,
-            patientId: healthType === "Corporate" ? newPatientId : patientId,
-            healthType: healthType
-        });
-
-        // Save new patient to database
-        await newPatient.save();
-
-        // Update user's patientLead list
-        await User.findByIdAndUpdate(userId, { patientLead });
-
-        res.send({ success: true, message: "Patient added successfully" });
     } catch (error) {
         console.error(error);
         res.status(500).send({ success: false, message: "Internal server error" });
     }
+
+
 };
 
 
@@ -103,9 +95,6 @@ const getNextPatientId = async (healthType) => {
     try {
         // Find the latest patient based on the healthType and sort by patientId in descending order
         const latestPatient = await Patient.findOne({ healthType }).sort({ patientId: -1 });
-
-        // Log the latest patient for debugging
-        console.log(latestPatient);
 
         // Determine the next patientId
         const nextId = latestPatient ? Number(latestPatient.patientId) + 1 : 100000; // Start from 100000 if no documents exist
@@ -122,44 +111,101 @@ const getNextPatientId = async (healthType) => {
 
 
 
-const getPatients = async (req, res) =>{
+const getPatients = async (req, res) => {
 
-    console.log("start getpatient func");
-    
+  
     const userId = req.body.userId
 
     try {
         console.log("start patient tryCatch");
-        
-        const user = await User.findOne({_id:userId})
-
+        const user = await User.findOne({ _id: userId })
         let patientLeadData = []
+        let patientLead = user.patientNumberLead
 
-        let patientLead = user.patientLead
-        
-        console.log("start for loop");
-        
-        for (const patientId of patientLead) {
-            const patientData = await Patient.findOne({patientId})
+       
+
+        for (const phoneNumber of patientLead) {
+            const patientData = await Patient.findOne({ phoneNumber })
             patientLeadData.push(patientData)
-            
+
         }
 
-        console.log("end for loop");
         
 
-        res.send({success:true,message:"patients data fetch",  patientsData:patientLeadData })
+        res.send({ success: true, message: "patients data fetch", patientsData: patientLeadData })
 
     } catch (error) {
         console.log(error)
-        res.send({success:false,message:"Error"})
-        
+        res.send({ success: false, message: "Error" })
+
     }
 }
 
 
-const deletePatient = async (req,res) =>{
+const deletePatient = async (req, res) => {
 
 }
 
-export {addPatient, deletePatient, getPatients}
+const generateOTP = () => {
+    // Generate a random 6-digit number
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    return otp.toString(); // Return as a string
+}
+
+const otpSent = async (req, res) => {
+
+    const { phoneNumber } = req.body
+
+    const otp = generateOTP()
+
+    const otpUrl = `https://sms4power.com/api/swsendSingle.asp?username=t1ndayur&password=93457581&sender=NDHEAL&sendto=91${Number(phoneNumber)}&entityID=1201159670876482139&templateID=1207168922725260446&message=Dear%20Sir/Mam%20Your%20OTP%20is%20${otp}%20for%20ndayurveda.info%20Regards%20ND%20Care%20Nirogam`
+
+
+    try {
+        const response = await axios.post(otpUrl)
+
+        if (response) {
+            res.send({ success: true, message: "OTP SENT", otp })
+        }
+    } catch (error) {
+        console.log(error);
+        res.send({ success: false, message: "OTP ERROR" })
+
+    }
+
+}
+
+// const addPatientVerify = async (req, res) =>{
+//     const {emailId, phoneNumber, isVerified} = req.body
+
+//     try {
+
+//         if(!phoneNumber){
+//             return res.send({success : false, message : "Please Enter Phone Number"})
+//         }
+
+//         const existPhoneNumber = await PatientVerify.find({phoneNumber})
+
+//         if(existPhoneNumber){
+//             return res.send({success : false, message : "Phone Number aleady Exist"})
+//         }
+
+//         const newPatientVerify = new PatientVerify({
+//             emailId,
+//             phoneNumber,
+//             isVerified
+//         })
+
+//         await newPatientVerify.save()
+
+//         return res.send({success : true, message : "Data Added Successfully"})
+
+//     } catch (error) {
+//         console.log(error);
+//         return res.send({success:false, message:"Error : Patient Verify Data failed"})
+
+//     }
+
+// }
+
+export { addPatient, deletePatient, getPatients, otpSent }

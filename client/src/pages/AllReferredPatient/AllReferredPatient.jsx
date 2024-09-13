@@ -25,6 +25,7 @@ const AllReferredPatient = () => {
         setPatientsList(response.data.patientsData);
         setPatientsData(response.data.patientsData);
         console.log(response.data.message);
+        console.log(response.data);
         if (response.data.patientsData.length == 0) {
           setDataAvailable(false)
         }
@@ -130,6 +131,7 @@ const AllReferredPatient = () => {
                     key={index}
                     className="bg-white text-[#081b2b] border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
+                    
                     <td className="px-6 py-4"></td>
                     <td className="px-6 py-4">DPR List</td>
                     <td className="px-6 py-4">{item.patientId}</td>
