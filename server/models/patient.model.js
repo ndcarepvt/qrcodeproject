@@ -52,22 +52,3 @@ const patientSchema = new mongoose.Schema({
 
 export const Patient = mongoose.models.Patient || mongoose.model("Patient", patientSchema)
 
-
-// const patientVerify = new mongoose.Schema({
-//     emailId:{
-//         type:String,
-//         default:""
-
-//     },
-//     phoneNumber:{
-//         type:Number,
-//         required:true
-//     },
-//     isVerified:{
-//         type:Boolean,
-//         default:null
-//     }
-// },{timestamps:true})
-
-
-// export const PatientVerify = mongoose.models.PatientVerify || mongoose.model("PatientVerify", patientVerify)
