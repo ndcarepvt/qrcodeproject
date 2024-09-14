@@ -105,7 +105,20 @@ const SignUp = () => {
                             </div>
                             <div className='mt-[-2rem] md:mt-0 flex flex-col gap-2'>
 
+                            <p><label htmlFor="country" className='text-xl font-semibold'>Country *</label></p>
+                                <select type="text"
+                                    id='country'
+                                    placeholder='Select country'
+                                    value={data.country}
+                                    name="country"
+                                    onChange={onChangeHandler} className='w-[250px] lg:w-[350px] border-2 border-solid border-[#081b2b] text-[#081b2b] py-1 px-2 rounded-sm outline-none bg-transparent' required autoComplete='off'>
 
+                                    <option value=''>
+                                        -- Select Country --
+                                    </option>
+                                    <option value='India'>India</option>
+                                    
+                                </select>
                                 <p><label
                                     htmlFor="state"
                                     className='text-xl font-semibold'>State *</label></p>
@@ -148,28 +161,7 @@ const SignUp = () => {
                                     <option value='Uttarakhand'>Uttarakhand</option>
                                     <option value='West Bengal'>West Bengal</option>
                                 </select>
-                                <p><label htmlFor="country" className='text-xl font-semibold'>Country *</label></p>
-                                <select type="text"
-                                    id='country'
-                                    placeholder='Select country'
-                                    value={data.country}
-                                    name="country"
-                                    onChange={onChangeHandler} className='w-[250px] lg:w-[350px] border-2 border-solid border-[#081b2b] text-[#081b2b] py-1 px-2 rounded-sm outline-none bg-transparent' required autoComplete='off'>
-
-                                    <option value=''>
-                                        -- Select Country --
-                                    </option>
-                                    <option value='United States'>United States</option>
-                                    <option value='China'>China</option>
-                                    <option value='Japan'>Japan</option>
-                                    <option value='Germany'>Germany</option>
-                                    <option value='India'>India</option>
-                                    <option value='United Kingdom'>United Kingdom</option>
-                                    <option value='France'>France</option>
-                                    <option value='Italy'>Italy</option>
-                                    <option value='Canada'>Canada</option>
-                                    <option value='Brazil'>Brazil</option>
-                                </select>
+                                
                                 <p><label htmlFor="pincode" className='text-xl font-semibold'>Pin Code *</label></p>
                                 <input type="text"
                                     id='pincode'
