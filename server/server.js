@@ -29,7 +29,7 @@ app.use('/images', express.static('uploads'))
 
 
 app.get('/',(req,res)=>{
-    res.send("Server is Ready")
+    res.send("Working Server")
 })
 
 
