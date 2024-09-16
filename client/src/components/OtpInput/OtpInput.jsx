@@ -86,6 +86,7 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
                 key={index}
                 type="text"
                 ref={(input) => (inputRefs.current[index] = input)}
+                inputmode="numeric"
                 value={value}
                 onChange={(e) => handleChange(index, e)}
                 onClick={() => handleClick(index)}
