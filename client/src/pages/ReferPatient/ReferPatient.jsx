@@ -8,6 +8,7 @@ const ReferPatient = () => {
 
   // variables Decleration
   let params = useParams();
+  const [submitLoad, setSubmitLoad] = useState(false)
   const { URL, userData, notification, token } = useContext(storeContext);
   const [data, setData] = useState({
     name: "",
@@ -43,22 +44,19 @@ const ReferPatient = () => {
         setData((prev) => ({ ...prev, country, state, city }))
       })
       .catch(error => console.error("Error:", error));
-    console.log(data);
   }
 
   const locationSuccess = (postion) => {
     getLocationDetails(postion.coords.latitude, postion.coords.longitude)
-    console.log(postion);
 
   }
   const locationError = () => {
-    console.log("User Block his Location");
+    console.log("Patient Block his Location");
 
   }
 
   const getLocation = () => {
     const result = navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
-    console.log(result);
 
   }
 
@@ -71,7 +69,6 @@ const ReferPatient = () => {
   // onload run functions
   const onLoad = async () => {
     getLocation()
-    console.log(params.usertoken);
     const phoneNumber = getNumber()
     setData((prev) => ({ ...prev, phoneNumber }))
   }
@@ -80,7 +77,6 @@ const ReferPatient = () => {
   const getNumber = () => {
     const urlParams = new URLSearchParams(window.location.search)
     const getPhoneNumber = urlParams.get('phoneNumber')
-    console.log(getPhoneNumber);
     return getPhoneNumber
 
   }
@@ -90,12 +86,11 @@ const ReferPatient = () => {
     const sendURL = `${URL}/api/patient/add`;
     try {
       const userId = token ? userData._id : params.usertoken;
-      console.log(userId);
 
       const response = await axios.post(sendURL, { ...data, patientId: patientCode, userId });
 
       if (response.data.success) {
-
+        setSubmitLoad(false)
         { token ? notification && toast.success(response.data.message) : toast.success(response.data.message) }
         setData({
           name: "",
@@ -118,6 +113,7 @@ const ReferPatient = () => {
   // send data to old crm database
   const onSubmithandler = async (event) => {
     event.preventDefault();
+    setSubmitLoad(true)
 
     if (data.healthType === "Corporate") {
       await onSendHandler();

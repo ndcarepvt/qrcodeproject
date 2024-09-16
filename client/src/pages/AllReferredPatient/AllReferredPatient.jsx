@@ -93,7 +93,7 @@ const AllReferredPatient = () => {
               <input type="text" placeholder='Search' onChange={(e) => setSearchValue(e.target.value)} className='border-2 border-solid border-gray-400 rounded-md py-1 px-3' />
             </div>
           </div>
-
+   
 
           <div className="overflow-x-auto sm:rounded-lg">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
