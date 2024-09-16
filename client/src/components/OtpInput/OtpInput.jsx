@@ -95,7 +95,7 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
                 inputMode="numeric"
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                onPasteCapture={handlePaste}
+                autoComplete="one-time-code"
                 className="otp-input w-[60px] h-[60px] m-[5px] text-[1.2rem] text-center border-2 border-solid border-black"
                 maxLength={1} // Ensure only one character per input
               />
