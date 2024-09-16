@@ -76,9 +76,9 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
   };
 
   return (
-    <div className="flex h-screen my-0 bg-[#E9ECEF] p-10">
-      <div className="w-full py-5 flex flex-col md:justify-center items-center bg-white rounded-xl">
-        <div className="">
+    <div className="flex flex-col justify-center items-center h-screen my-0 bg-[#E9ECEF] p-10">
+      <div className="w-full py-5 flex flex-col justify-center items-center bg-white rounded-xl">
+        <div className="w-[95%]">
           <div className="text-center">
             <h1 className="text-4xl mb-6 font-bold">OTP Verification</h1>
             {otp.map((value, index) => (
@@ -97,7 +97,7 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
             ))}
             <button
               type="submit"
-              className="p-2 my-2 cursor-pointer bg-[#3e454b] border-2 border-solid border-[#3e454b] text-white w-[100%] text-lg rounded-md"
+              className="p-2 my-2 cursor-pointer bg-[#3e454b] border-2 border-solid border-[#3e454b] text-white w-[90%] text-lg rounded-md"
               onClick={onSubmit}
             >
               Submit

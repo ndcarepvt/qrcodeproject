@@ -326,7 +326,9 @@ const ReferPatient = () => {
                 )}
               </div>
             </div>
-            <button type="submit" className="p-2 my-2 cursor-pointer bg-[#3e454b] border-2 border-solid border-[#3e454b] text-white w-[100%] text-lg rounded-md">Submit</button>
+            <button type="submit" className="p-2 my-2 cursor-pointer bg-[#3e454b] border-2 border-solid border-[#3e454b] text-white w-[100%] text-lg rounded-md">{submitLoad?<div className="animate-spin inline-block size-6 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
+                  <span className="sr-only">Loading...</span>
+                </div>:"Submit"}</button>
           </form>
         </div>
       </div>
