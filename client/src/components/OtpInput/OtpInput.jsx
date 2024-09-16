@@ -11,23 +11,6 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
       inputRefs.current[0].focus();
     }
 
-    // Use Web OTP API if supported
-    if ('OTPCredential' in window) {
-      const ac = new AbortController();
-      navigator.credentials.get({
-        otp: { transport: ['sms'] },
-        signal: ac.signal
-      }).then((otp) => {
-        if (otp && otp.code) {
-          handleAutoPaste(otp.code);
-        }
-      }).catch((err) => {
-        console.log('Web OTP API Error:', err);
-      });
-
-      // Optional: abort request if OTP is not received within 30 seconds
-      setTimeout(() => ac.abort(), 30000);
-    }
   }, []);
 
   // Handle change in the input fields
@@ -73,7 +56,7 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
   // Handle normal paste event to distribute values across input fields
   const handlePaste = (e) => {
     e.preventDefault();
-    const paste = e.clipboardData.getData('text').slice(0, length); // Limit to OTP length
+    const paste = e.clipboardData.getData('text'); // Limit to OTP length
     handleAutoPaste(paste); // Use the same logic for auto-paste and manual paste
   };
 
