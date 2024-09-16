@@ -15,26 +15,35 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
 
   // Handle change in the input fields
   const handleChange = (index, e) => {
-    const value = e.target.value;
-
-    // Auto-paste detection if the user uses auto-paste from the keyboard
-    if (value.length > 1) {
-      handleAutoPaste(value);
-      return;
-    }
-
-    if (isNaN(value)) return; // Only accept numeric input
-
-    const newOtp = [...otp];
-    // Only allow one character per input field
-    newOtp[index] = value.substring(value.length - 1);
-    setOtp(newOtp);
-
-    // Move to next input if current field is filled
-    if (value && index < length - 1 && inputRefs.current[index + 1]) {
-      inputRefs.current[index + 1].focus();
+    let value = e.target.value;
+    
+    // If the value length is equal to or greater than OTP length, it's likely pasted in full
+    if (value.length >= length) {
+      const otpValues = value.split(""); // Split the value into an array
+      
+      // Update OTP state and input fields
+      setOtp(otpValues);
+      otpValues.forEach((char, i) => {
+        if (inputRefs.current[i]) {
+          inputRefs.current[i].value = char;
+        }
+      });
+  
+      // Set focus on the last input box after filling all
+      inputRefs.current[length - 1].focus();
+    } else {
+      // Standard behavior for manual typing
+      const newOtp = [...otp];
+      newOtp[index] = value.charAt(value.length - 1); // Get the last entered character
+      setOtp(newOtp);
+  
+      // Move to the next input field
+      if (value && index < length - 1) {
+        inputRefs.current[index + 1].focus();
+      }
     }
   };
+  
 
   // Handle backspace key for navigating and clearing inputs
   const handleKeyDown = (index, e) => {
@@ -55,30 +64,20 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
 
   const handlePaste = (e) => {
     e.preventDefault();
-  
-    // Get the pasted value (numeric or string)
     const paste = e.clipboardData.getData('text').trim();
   
-    // Ensure the pasted value length matches the input length
     if (paste.length === length) {
-      const newOtp = paste.split(''); // Split each character into an array
-      
-      // Update the OTP state with the pasted value
+      const newOtp = paste.split('');
       setOtp(newOtp);
-  
-      // Fill each input field with the corresponding pasted value
       newOtp.forEach((char, index) => {
         inputRefs.current[index].value = char;
       });
-  
-      // Move focus to the last input field after pasting
-      if (inputRefs.current[length - 1]) {
-        inputRefs.current[length - 1].focus();
-      }
+      inputRefs.current[length - 1].focus();
     } else {
-      toast.error("Invalid OTP length");
+      toast.error('Invalid OTP length');
     }
   };
+  
   
   return (
     <div className="flex flex-col justify-center items-center h-screen my-0 bg-[#E9ECEF] p-10">
