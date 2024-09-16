@@ -56,20 +56,35 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
   // Handle normal paste event to distribute values across input fields
   const handlePaste = (e) => {
     e.preventDefault();
-    const paste = e.clipboardData.getData('text'); // Limit to OTP length
-    handleAutoPaste(paste); // Use the same logic for auto-paste and manual paste
+  
+    // Get the pasted value (string or numeric) from clipboard
+    let paste = e.clipboardData.getData('text');
+  
+    // Ensure the value is treated as a string or converted to string
+    if (!isNaN(paste)) {
+      paste = parseInt(paste).toString(); // Convert numeric paste to string
+    }
+  
+    // Ensure that only the correct number of characters is pasted
+    handleAutoPaste(paste.slice(0, length));
   };
 
   // Handle auto-paste from mobile keyboards or any multi-character paste
   const handleAutoPaste = (paste) => {
+    console.log(paste);
+    
     const newOtp = paste.split("").slice(0, length); // Split and limit to length
 
+    console.log(newOtp);
+    
     newOtp.forEach((char, i) => {
       if (inputRefs.current[i]) {
         inputRefs.current[i].value = char; // Set input value
       }
     });
 
+    console.log(newOtp);
+    
     setOtp(newOtp); // Update OTP state
 
     // Focus on the next empty input
