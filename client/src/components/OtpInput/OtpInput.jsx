@@ -15,6 +15,13 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
   // Handle change in the input fields
   const handleChange = (index, e) => {
     const value = e.target.value;
+
+    // Auto-paste detection if the user uses auto-paste from the keyboard
+    if (value.length > 1) {
+      handleAutoPaste(value);
+      return;
+    }
+
     if (isNaN(value)) return; // Only accept numeric input
 
     const newOtp = [...otp];
@@ -25,14 +32,6 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
     // Move to next input if current field is filled
     if (value && index < length - 1 && inputRefs.current[index + 1]) {
       inputRefs.current[index + 1].focus();
-    }
-  };
-
-  // Handle the click event (optional for better UX)
-  const handleClick = (index) => {
-    inputRefs.current[index].focus();
-    if (index > 0 && !otp[index - 1]) {
-      inputRefs.current[otp.indexOf("")].focus();
     }
   };
 
@@ -53,13 +52,17 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
     }
   };
 
-  // Handle paste event to distribute values across input fields
+  // Handle normal paste event to distribute values across input fields
   const handlePaste = (e) => {
     e.preventDefault();
     const paste = e.clipboardData.getData('text').slice(0, length); // Limit to OTP length
-    const newOtp = paste.split(""); // Split the pasted text into an array
+    handleAutoPaste(paste); // Use the same logic for auto-paste and manual paste
+  };
 
-    // Fill the inputs and set the state accordingly
+  // Handle auto-paste from mobile keyboards or any multi-character paste
+  const handleAutoPaste = (paste) => {
+    const newOtp = paste.split("").slice(0, length); // Split and limit to length
+
     newOtp.forEach((char, i) => {
       if (inputRefs.current[i]) {
         inputRefs.current[i].value = char; // Set input value
@@ -77,7 +80,7 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen my-0 bg-[#E9ECEF] p-10">
-      <div className="w-full py-5 flex flex-col justify-center items-center bg-white rounded-xl">
+      <div className="w-full py-10 flex flex-col justify-center items-center bg-white rounded-xl">
         <div className="w-[95%]">
           <div className="text-center">
             <h1 className="text-4xl mb-6 font-bold">OTP Verification</h1>
@@ -86,10 +89,9 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
                 key={index}
                 type="text"
                 ref={(input) => (inputRefs.current[index] = input)}
-                inputmode="numeric"
                 value={value}
                 onChange={(e) => handleChange(index, e)}
-                onClick={() => handleClick(index)}
+                inputMode="numeric"
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
                 onPasteCapture={handlePaste}
