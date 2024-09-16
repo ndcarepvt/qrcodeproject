@@ -15,6 +15,8 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
 
   // Handle change in the input fields
   const handleChange = (index, e) => {
+    console.log("start on handle change");
+    
     let value = e.target.value;
     
     // If the value length is equal to or greater than OTP length, it's likely pasted in full
