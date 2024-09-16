@@ -53,47 +53,33 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
     }
   };
 
-  // Handle normal paste event to distribute values across input fields
   const handlePaste = (e) => {
     e.preventDefault();
   
-    // Get the pasted value (string or numeric) from clipboard
-    let paste = e.clipboardData.getData('text');
+    // Get the pasted value (numeric or string)
+    const paste = e.clipboardData.getData('text').trim();
   
-    // Ensure the value is treated as a string or converted to string
-    if (!isNaN(paste)) {
-      paste = parseInt(paste).toString(); // Convert numeric paste to string
-    }
+    // Ensure the pasted value length matches the input length
+    if (paste.length === length) {
+      const newOtp = paste.split(''); // Split each character into an array
+      
+      // Update the OTP state with the pasted value
+      setOtp(newOtp);
   
-    // Ensure that only the correct number of characters is pasted
-    handleAutoPaste(paste.slice(0, length));
-  };
-
-  // Handle auto-paste from mobile keyboards or any multi-character paste
-  const handleAutoPaste = (paste) => {
-    console.log(paste);
-    
-    const newOtp = paste.split("").slice(0, length); // Split and limit to length
-
-    console.log(newOtp);
-    
-    newOtp.forEach((char, i) => {
-      if (inputRefs.current[i]) {
-        inputRefs.current[i].value = char; // Set input value
+      // Fill each input field with the corresponding pasted value
+      newOtp.forEach((char, index) => {
+        inputRefs.current[index].value = char;
+      });
+  
+      // Move focus to the last input field after pasting
+      if (inputRefs.current[length - 1]) {
+        inputRefs.current[length - 1].focus();
       }
-    });
-
-    console.log(newOtp);
-    
-    setOtp(newOtp); // Update OTP state
-
-    // Focus on the next empty input
-    const nextEmptyInput = inputRefs.current[paste.length];
-    if (nextEmptyInput) {
-      nextEmptyInput.focus();
+    } else {
+      toast.error("Invalid OTP length");
     }
   };
-
+  
   return (
     <div className="flex flex-col justify-center items-center h-screen my-0 bg-[#E9ECEF] p-10">
       <div className="w-full py-10 flex flex-col justify-center items-center bg-white rounded-xl">
