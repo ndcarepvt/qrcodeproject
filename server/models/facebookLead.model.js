@@ -27,7 +27,7 @@ const fbLeadSchema= new mongoose.Schema({
     },
     sheetname:{
         type:String,
-        required:true
+        default:""
     },
     formname:{
         type:String,
@@ -35,7 +35,7 @@ const fbLeadSchema= new mongoose.Schema({
     },
     platform:{
         type:String,
-        required:true,
+        default:"facebook",
     },
     adincharge:{
         type:String,

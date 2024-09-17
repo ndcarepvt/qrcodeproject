@@ -32,7 +32,13 @@ app.get('/',(req,res)=>{
     res.send("Working Server")
 })
 
+app.post('/api/webhook', (req,res)=>{
+    console.log(req.body);
+    return res.send({success:true, message:"test"})
+})
+
 
 app.listen(port,(req,res)=>{
+
     console.log(`Server is Running, http://localhost:${port}`)
 })

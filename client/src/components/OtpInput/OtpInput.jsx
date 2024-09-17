@@ -68,19 +68,16 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
   const handlePaste = (e) => {
     e.preventDefault();
     const paste = e.clipboardData.getData('text').trim();
-    console.log(paste);
     
   
     if (paste.length === length) {
       const newOtp = paste.split('');
       setOtp(newOtp);
-      console.log(newOtp);
       
       newOtp.forEach((char, index) => {
         inputRefs.current[index].value = char;
       });
       inputRefs.current[length - 1].focus();
-      console.log(inputRefs);
       
     } else {
       toast.error('Invalid OTP length');

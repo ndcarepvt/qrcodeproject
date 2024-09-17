@@ -3,16 +3,20 @@ import nodemailer from 'nodemailer'
 import axios from 'axios'
 
 const addFBLead = async (req, res) => {
+    
+
     try {
         const {
             name, email, contact, city, message, sheetname,
-            fbid, platform, formname, adincharge
+            fbid, platform, formname, adincharge, event
         } = req.body;
 
+        console.log(event);
+        
         console.log(req.body)
 
         // Validate required fields
-        if (![name, email, contact, city, message, sheetname, fbid, platform, formname, adincharge].every(Boolean)) {
+        if (![name, email, contact, city, message, fbid, formname, adincharge].every(Boolean)) {
             console.error("Missing required fields");
             return res.status(400).json({ success: false, message: "Missing required fields" });
         }
@@ -24,9 +28,13 @@ const addFBLead = async (req, res) => {
             return res.status(409).json({ success: false, message: `Lead with ID ${fbid} already exists` });
         }
 
+        let number = contact.slice(-10);
+        console.log(number);
+        
+
         // Determine form name and campaign
         const formnameLower = formname.toLowerCase();
-        let formnameVal = "others";
+        let formnameVal = formname.toLowerCase();
         let campaign = "Ivr_Common";
 
         if (formnameLower.includes("kidney")) {
@@ -37,19 +45,20 @@ const addFBLead = async (req, res) => {
         }
 
         // Send campaign details
-        await sendOzentol(contact, campaign);
+        await sendOzentol(number, campaign);
 
         // Handle address
         const address = await onAddressHandler(city);
 
+        
+     
         // Prepare CRM data
         const crmData = {
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact,
+            contact:number,
             city: city.toLowerCase(),
-            sheetname: sheetname.toLowerCase(),
         };
 
         // Prepare lead data
@@ -58,10 +67,9 @@ const addFBLead = async (req, res) => {
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact,
+            contact:number,
             city: city.toLowerCase(),
-            sheetname: sheetname.toLowerCase(),
-            platform: platform.toLowerCase(),
+            platform: platform,
             formname: formnameVal,
             adincharge,
             state: address.stateVal,
