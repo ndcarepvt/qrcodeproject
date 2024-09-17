@@ -20,7 +20,7 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
     let value = e.target.value;
     
     // If the value length is equal to or greater than OTP length, it's likely pasted in full
-    if (value.length >= length) {
+    if (value.length === length) {
       const otpValues = value.split(""); // Split the value into an array
       
       // Update OTP state and input fields
