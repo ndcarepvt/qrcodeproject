@@ -21,26 +21,31 @@ const OtpInput = ({ length = 6, onOtpSubmit = () => {} }) => {
     
     // If the value length is equal to or greater than OTP length, it's likely pasted in full
     if (value.length === length) {
+      console.log("start on if in handle change");
       const otpValues = value.split(""); // Split the value into an array
       
       // Update OTP state and input fields
       setOtp(otpValues);
       otpValues.forEach((char, i) => {
+        console.log("start loop in handle change");
         if (inputRefs.current[i]) {
           inputRefs.current[i].value = char;
         }
       });
-  
+      
       // Set focus on the last input box after filling all
+      console.log("focus in handle change");
       inputRefs.current[length - 1].focus();
     } else {
+      console.log("start else in handle change");
       // Standard behavior for manual typing
       const newOtp = [...otp];
       newOtp[index] = value.charAt(value.length - 1); // Get the last entered character
       setOtp(newOtp);
-  
+      
       // Move to the next input field
       if (value && index < length - 1) {
+        console.log("focus if in handle change");
         inputRefs.current[index + 1].focus();
       }
     }
