@@ -4,22 +4,32 @@ import axios from 'axios'
 
 const addFBLead = async (req, res) => {
     
+    const {
+        name, email, contact, city, message, sheetname,
+        fbid, platform, formname, adincharge, 
+    } = req.body;
 
     try {
-        const {
-            name, email, contact, city, message, sheetname,
-            fbid, platform, formname, adincharge, event
-        } = req.body;
-
-        console.log(event);
-        
-        console.log(req.body)
 
         // Validate required fields
         if (![name, email, contact, city, message, fbid, formname, adincharge].every(Boolean)) {
             console.error("Missing required fields");
             return res.status(400).json({ success: false, message: "Missing required fields" });
         }
+
+        // Email Send
+        const leadMail = {
+            fbid,
+            name: name.toLowerCase(),
+            email: email.toLowerCase(),
+            message: message.toLowerCase(),
+            contact,
+            city: city,
+            platform: platform,
+            formname,
+            adincharge,
+        }
+        await FBLeadMail(leadMail);
 
         // Check for existing entry
         const existingEntry = await FBLead.findOne({ fbid });
@@ -28,8 +38,9 @@ const addFBLead = async (req, res) => {
             return res.status(409).json({ success: false, message: `Lead with ID ${fbid} already exists` });
         }
 
-        let number = contact.slice(-10);
-        console.log(number);
+         // set phoneNumber
+         let number = contact.slice(-10);
+         console.log(number);
         
 
         // Determine form name and campaign
@@ -51,7 +62,6 @@ const addFBLead = async (req, res) => {
         const address = await onAddressHandler(city);
 
         
-     
         // Prepare CRM data
         const crmData = {
             name: name.toLowerCase(),
@@ -80,7 +90,6 @@ const addFBLead = async (req, res) => {
         const CRMResult = await onCRMDataSubmit(crmData);
         if (CRMResult) {
             await leadData.save();
-            await FBLeadMail(leadData);
             console.log("Patient Lead Data Added Successfully");
             return res.status(201).json({ success: true, message: "Lead data added successfully" });
         } else {
@@ -136,21 +145,20 @@ const FBLeadMail = async (lead) => {
         <p><strong>Message:</strong> ${lead.message}</p>
         <p><strong>PhoneNumber:</strong> ${lead.contact}</p>
         <p><strong>City:</strong> ${lead.city}</p>
-        <p><strong>SheetName:</strong> ${lead.sheetname}</p>
         <p><strong>Platform:</strong> ${lead.platform}</p>
         <p><strong>Formname:</strong> ${lead.formname}</p>
         <p><strong>AdIncharge:</strong> ${lead.adincharge}</p>
     `;
 
-let emailList = ""
-    if(lead.adincharge == "Naman"){
-        emailList = "sitedigital4@gmail.com, leadsfb78@gmail.com,"
-    } else if(lead.adincharge == "Raghav"){
-        // emailList = "sitedigital4@gmail.com"
-        emailList = "sitedigital4@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
-    }else {
-        emailList = "sitedigital4@gmail.com, leadsfb78@gmail.com,"
-    }
+let emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
+    // if(lead.adincharge == "Naman"){
+    //     emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
+    // } else if(lead.adincharge == "Raghav"){
+    //     // emailList = "sitedigital4@gmail.com"
+    //     emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
+    // }else {
+    //     emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
+    // }
 
 
     async function main() {
