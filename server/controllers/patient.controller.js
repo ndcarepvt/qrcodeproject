@@ -66,11 +66,19 @@ const addPatient = async (req, res) => {
             user.patientNumberLead.push(phoneNumber);
             await user.save();
 
-            
+            // Generate new patient ID if healthType is "Corporate"
+            let newPatientId = "";
+            if (healthType === "Corporate") {
+                newPatientId = await getNextPatientId(healthType);
+            }
 
             // Create new patient instance
             const newPatient = new Patient({
+                name:name,
                 phoneNumber: phoneNumber,
+                disease : disease,
+                patientId : healthType === "Corporate" ? newPatientId : patientId,
+                healthType : healthType,
                 city: city,
                 state: state,
                 country: country,

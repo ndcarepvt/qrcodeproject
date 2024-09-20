@@ -1,10 +1,10 @@
 import express from 'express'
-import { addFBLead, compareFBLead } from '../controllers/fblead.controller.js'
+import { addFBLead, addFBLeadInternational } from '../controllers/fblead.controller.js'
 
 const FBLeadRouter = express.Router()
 
 FBLeadRouter.post('/add', addFBLead)
-FBLeadRouter.post('/compare', compareFBLead)
+FBLeadRouter.post('/addint', addFBLeadInternational)
 
 
 export default FBLeadRouter

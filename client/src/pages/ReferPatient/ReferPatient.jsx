@@ -62,12 +62,15 @@ const ReferPatient = () => {
 
 
   useEffect(() => {
-    onLoad()
+    if(params.usertoken){
+      onLoad()
+    }
 
   }, [data.country, data.state, data.city])
 
   // onload run functions
   const onLoad = async () => {
+    
     getLocation()
     const phoneNumber = getNumber()
     setData((prev) => ({ ...prev, phoneNumber }))
