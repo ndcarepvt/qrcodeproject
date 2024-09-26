@@ -7,6 +7,8 @@ import adminRoute from './routes/admin.route.js'
 import patientRouter from './routes/patient.route.js'
 import FBLeadRouter from './routes/fblead.route.js'
 import kycRouter from './routes/kyc.route.js'
+import eventLeadRouter from './routes/eventLead.route.js'
+import axios from 'axios'
 
 // config
 const app = express()
@@ -25,20 +27,34 @@ app.use('/api/admin', adminRoute)
 app.use('/api/patient', patientRouter)
 app.use('/api/fblead', FBLeadRouter)
 app.use('/api/kycform', kycRouter)
+app.use('/api/eventLead', eventLeadRouter)
 app.use('/images', express.static('uploads'))
 
 
-app.get('/',(req,res)=>{
-    res.send("Working Server")
+app.get('/', (req, res) => {
+  res.send("Working Server")
 })
 
-app.post('/api/webhook', (req,res)=>{
-    console.log(req.body);
-    return res.send({success:true, message:"test"})
+app.post('/api/webhook', (req, res) => {
+
+
+  return res.send({ success: true, message: "test" })
+})
+app.post('/api/whatsappstatus', (req, res) => {
+  console.log(req.body);
+  console.log(req.body.whatsapp);
+  console.log(req.body.whatsapp.messages);
+
+  return res.send({ success: true, message: "test" })
+})
+
+app.post('/api/test', async (req, res) => {
+
+ 
 })
 
 
-app.listen(port,(req,res)=>{
+app.listen(port, (req, res) => {
 
-    console.log(`Server is Running, http://localhost:${port}`)
+  console.log(`Server is Running, http://localhost:${port}`)
 })
