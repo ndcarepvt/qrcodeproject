@@ -36,8 +36,7 @@ app.get('/', (req, res) => {
 })
 
 app.post('/api/webhook', (req, res) => {
-
-
+ 
   return res.send({ success: true, message: "test" })
 })
 app.post('/api/whatsappstatus', (req, res) => {
@@ -50,7 +49,8 @@ app.post('/api/whatsappstatus', (req, res) => {
 
 app.post('/api/test', async (req, res) => {
 
- 
+  const {number} = req.body
+
 })
 
 

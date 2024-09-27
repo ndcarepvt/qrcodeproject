@@ -31,8 +31,16 @@ const addEventLead = async (req, res) => {
         message,
         eventname
       }
+      const CRMleadData = {
+        name,
+        email,
+        contact:phonenumber,
+        message,
+        eventname
+      }
 
       eventLeadMail(leadData);
+      leadDataOnCRM(CRMleadData);
 
       // Update lead details and set status to active
       existLead.name = name;
@@ -59,6 +67,7 @@ const addEventLead = async (req, res) => {
 
     // Send message to the phone number
     eventLeadMail(newEventLead);
+    sendMessage(phonenumber)
 
     // Save the new lead
     await newEventLead.save();
@@ -94,7 +103,7 @@ const sendMessage = async (number) =>{
           "content": {
             "type": "template",
             "template": {
-              "name": "puneopd_26",
+              "name": "event_template_auto_send",
               "language": {
                 "policy": "deterministic",
                 "code": "en"
@@ -106,7 +115,7 @@ const sendMessage = async (number) =>{
                     {
                       "type": "image",     // 'image' should be lowercase
                       "image": {
-                        "link": "https://ndprivatelimited.com/ameo/puneopd.jpg"
+                        "link": "https://ndprivatelimited.com/ameo/brochure-for-event.jpg"
                       }
                     }
                   ]
@@ -182,6 +191,21 @@ const eventLeadMail = async (lead) => {
 
   main(eventname).catch(console.error);
 
+}
+
+
+const leadDataOnCRM = async (data) => {
+  axios.post('https://ndayurveda.info/api/Query/EventQuery', data, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => {
+    console.log(response.data)
+  })
+  .catch(error => {
+    console.error(error)
+  });
 }
 
 
