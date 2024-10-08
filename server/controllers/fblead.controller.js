@@ -6,7 +6,7 @@ const addFBLead = async (req, res) => {
     
     const {
         name, email, contact, city, message, sheetname,
-        fbid, platform, formname, adincharge, 
+        fbid, platform, formname, adincharge, emailtitle
     } = req.body;
 
     try {
@@ -29,7 +29,7 @@ const addFBLead = async (req, res) => {
             formname,
             adincharge,
         }
-        await FBLeadMail(leadMail);
+        await FBLeadMail(leadMail, emailtitle);
 
         // Check for existing entry
         const existingEntry = await FBLead.findOne({ fbid });
@@ -128,7 +128,7 @@ const onCRMDataSubmit = async (data) => {
 }
 
 
-const FBLeadMail = async (lead) => {
+const FBLeadMail = async (lead, emailtitle) => {
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         secure: true,
@@ -146,12 +146,17 @@ const FBLeadMail = async (lead) => {
         <p><strong>Message:</strong> ${lead.message}</p>
         <p><strong>PhoneNumber:</strong> ${lead.contact}</p>
         <p><strong>City:</strong> ${lead.city}</p>
-        <p><strong>Platform:</strong> ${lead.platform}</p>
         <p><strong>Formname:</strong> ${lead.formname}</p>
         <p><strong>AdIncharge:</strong> ${lead.adincharge}</p>
     `;
 
 let emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
+let formname = lead.formname.toLowerCase()
+
+    if(formname.includes('kidney')){
+        emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com"
+    }
+
     // if(lead.adincharge == "Naman"){
     //     emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
     // } else if(lead.adincharge == "Raghav"){
@@ -167,7 +172,7 @@ let emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.
         const info = await transporter.sendMail({
             from: 'githubndcare@gmail.com', // sender address
             to: emailList, // list of receivers
-            subject: "India Add New Lead", // Subject line
+            subject: emailtitle, // Subject line
             html: formattedData, // plain text body
         });
 
@@ -228,7 +233,7 @@ const sendOzentol = async (number, campaign) => {
 
 // INTERNATIONAL FUNCTIONS OR API STARTED
 
-const FBLeadMailInternational = async (lead) => {
+const FBLeadMailInternational = async (lead, emailtitle) => {
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         secure: true,
@@ -246,7 +251,6 @@ const FBLeadMailInternational = async (lead) => {
         <p><strong>Message:</strong> ${lead.message}</p>
         <p><strong>PhoneNumber:</strong> ${lead.contact}</p>
         <p><strong>City:</strong> ${lead.city}</p>
-        <p><strong>Platform:</strong> ${lead.platform}</p>
         <p><strong>Formname:</strong> ${lead.formname}</p>
         <p><strong>AdIncharge:</strong> ${lead.adincharge}</p>
     `;
@@ -259,7 +263,7 @@ let emailList = "githubndcare@gmail.com, internationalfbqueries@gmail.com, ragha
         const info = await transporter.sendMail({
             from: 'githubndcare@gmail.com', // sender address
             to: emailList, // list of receivers
-            subject: "International New Lead", // Subject line
+            subject: emailtitle, // Subject line
             html: formattedData, // plain text body
         });
 
@@ -325,7 +329,7 @@ const addFBLeadInternational = async (req, res) => {
     
     const {
         name, email, contact, city, message,
-        fbid, platform, formname, adincharge, 
+        fbid, platform, formname, adincharge, emailtitle
     } = req.body;
 
     try {
@@ -348,7 +352,7 @@ const addFBLeadInternational = async (req, res) => {
             formname,
             adincharge,
         }
-        await FBLeadMailInternational(leadMail);
+        await FBLeadMailInternational(leadMail, emailtitle);
 
         // Check for existing entry
         const existingEntry = await FBLead.findOne({ fbid });
@@ -374,7 +378,7 @@ const addFBLeadInternational = async (req, res) => {
 
         // Determine form name and campaign
         let formnameVal = formname.toLowerCase();
-        let campaign = "Progressive_18886256645";
+        let campaign = "Ivr_Common";
 
         // Send campaign details
         await sendOzentolInternational(number, campaign);
