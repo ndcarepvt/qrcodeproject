@@ -39,9 +39,13 @@ const addFBLead = async (req, res) => {
         }
 
          // set phoneNumber
-         let number = contact.slice(-10);
-         console.log(number);
-        
+         let number = contact
+
+         if(toString(number).length > 10){
+            number = contact.slice(-10);
+            console.log(number);
+         }
+
 
         // Determine form name and campaign
         const formnameLower = formname.toLowerCase();
