@@ -22,7 +22,7 @@ const addFBLead = async (req, res) => {
             fbid,
             name: name.toLowerCase(),
             email: email.toLowerCase(),
-            message: toString(message).toLowerCase(),
+            message: message,
             contact,
             city: city,
             platform: platform,
