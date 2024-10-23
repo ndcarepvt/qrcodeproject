@@ -349,7 +349,7 @@ const addFBLeadInternational = async (req, res) => {
             fbid,
             name: name.toLowerCase(),
             email: email.toLowerCase(),
-            message: message.toLowerCase(),
+            message: message,
             contact,
             city: city,
             platform: platform,
@@ -385,7 +385,7 @@ const addFBLeadInternational = async (req, res) => {
         let campaign = "Ivr_Common";
 
         // Send campaign details
-        await sendOzentolInternational(number, campaign);
+        // await sendOzentolInternational(number, campaign);
 
         // Handle address
         const address = await onAddressHandler(city);

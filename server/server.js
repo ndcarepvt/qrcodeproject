@@ -9,6 +9,7 @@ import FBLeadRouter from './routes/fblead.route.js'
 import kycRouter from './routes/kyc.route.js'
 import eventLeadRouter from './routes/eventLead.route.js'
 import axios from 'axios'
+import otherRouter from './routes/other.route.js'
 
 // config
 const app = express()
@@ -28,6 +29,7 @@ app.use('/api/patient', patientRouter)
 app.use('/api/fblead', FBLeadRouter)
 app.use('/api/kycform', kycRouter)
 app.use('/api/eventLead', eventLeadRouter)
+app.use('/api/other', otherRouter)
 app.use('/images', express.static('uploads'))
 
 
