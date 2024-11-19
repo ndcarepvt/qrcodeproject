@@ -37,14 +37,7 @@ const Sidebar = ({ setShowSideBar, showSideBar }) => {
 
             <div className={` ${showSideBar ? "w-[60%] sm:w-[30%] md:w-[30%] lg:w-[20%] xl:w-[20%] block" : "hidden sm:block sm:w-[15%] md:w-[12%] lg:w-[12%] xl:w-[8rem]"} h-full ${token ? "flex flex-col justify-between" : ""} sm:fixed overflow-auto bg-[#081b2b] p-4 shadow-xl shadow-blue-gray-900/5  transition-all absolute z-50 md:z-0`}>
                 {showSideBar ? <div className="mb-4 flex justify-around items-center">
-                    <h2 className='text-2xl text-white'>
-                        {/* {notification?"RishtPusht":""} */}
-                        RishtPusht
-                    </h2>
-                    {/* <div onClick={()=>setShowSideBar(false)} >
-
-                    <RxCross2 className='text-lg text-white' />
-                    </div> */}
+                    
                 </div> : <></>}
 
 

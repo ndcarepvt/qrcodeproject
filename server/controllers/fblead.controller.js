@@ -41,10 +41,11 @@ const addFBLead = async (req, res) => {
          // set phoneNumber
          let number = contact
 
-         if(toString(number).length > 10){
-            number = contact.slice(-10);
+         if (number.toString().length > 10) {
+            // console.log(number.toString().length);
+            number = number.toString().slice(-10); // Ensure it's sliced from the number's string representation
             console.log(number);
-         }
+        }
 
 
         // Determine form name and campaign
@@ -83,7 +84,7 @@ const addFBLead = async (req, res) => {
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact:number,
+            contact:number.toString(),
             city: city.toLowerCase(),
             platform: platform,
             formname: formnameVal,
@@ -365,7 +366,7 @@ const addFBLeadInternational = async (req, res) => {
             return res.status(409).json({ success: false, message: `Lead with ID ${fbid} already exists` });
         }
 
-        const number = getPlainNumber(contact)
+        // const number = getPlainNumber(contact)
        
 
          // Prepare CRM data
@@ -373,7 +374,7 @@ const addFBLeadInternational = async (req, res) => {
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact:number,
+            contact:contact.toString(),
             city: city.toLowerCase(),
         };
 
@@ -397,7 +398,7 @@ const addFBLeadInternational = async (req, res) => {
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact:number,
+            contact:contact.toString(),
             city: city.toLowerCase(),
             platform: platform,
             formname: formnameVal,

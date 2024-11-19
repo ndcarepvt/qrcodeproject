@@ -14,7 +14,7 @@ const fbLeadSchema= new mongoose.Schema({
         required:true
     },
     contact:{
-        type:Number,
+        type:String,
         required:true
     },
     fbid:{

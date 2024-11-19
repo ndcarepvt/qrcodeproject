@@ -38,20 +38,23 @@ app.get('/', (req, res) => {
 })
 
 app.post('/api/webhook', (req, res) => {
- 
+
   return res.send({ success: true, message: "test" })
 })
+
+
+
 app.post('/api/whatsappstatus', (req, res) => {
-  console.log(req.body);
-  console.log(req.body.whatsapp);
-  console.log(req.body.whatsapp.messages);
+  console.log("req.body", req.body);
+  console.log("req.body.whatsapp",req.body.whatsapp);
+  console.log("req.body.whatsapp.messages",req.body.whatsapp.messages);
 
   return res.send({ success: true, message: "test" })
 })
 
 app.post('/api/test', async (req, res) => {
 
-  const {number} = req.body
+  const { number } = req.body
 
 })
 
