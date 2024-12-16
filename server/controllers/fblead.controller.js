@@ -61,7 +61,7 @@ const addFBLead = async (req, res) => {
         }
 
         // Send campaign details
-        // await sendOzentol(number, campaign);
+        await sendOzentol(number, campaign);
 
         // Prepare CRM data
         const crmData = {
