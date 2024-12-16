@@ -7,11 +7,11 @@ import StoreContextProvider from './Context/StoreContext.jsx'
 
 
 createRoot(document.getElementById('root')).render(
-  
-      <BrowserRouter>
+
+  <BrowserRouter>
     <StoreContextProvider>
-        <App />
+      <App />
     </StoreContextProvider>
-      </BrowserRouter>,
+  </BrowserRouter>,
 
 )

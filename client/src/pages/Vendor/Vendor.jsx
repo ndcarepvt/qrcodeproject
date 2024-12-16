@@ -10,7 +10,7 @@ const Vendor = () => {
 
   return (
     <div>
-      <div className='bg-[#dddfdf] p-8 w-full h-screen'>
+      <div className='bg-[#dddfdf] p-8 w-full h-screen overflow-x-scroll'>
         <div className='bg-white p-4 shadow-lg my-4 gap-4 rounded-md text-[#081b2b] '>
           <div className='bg-white p-4 my-4 gap-4 rounded-md text-[#081b2b] flex flex-col sm:flex-row justify-center items-center sm:justify-between'>
             <p>Show Enteries</p>
@@ -21,7 +21,7 @@ const Vendor = () => {
           </div>
 
 
-          <div className=" overflow-x-auto sm:rounded-lg">
+          <div className=" overflow-x-scroll sm:rounded-lg">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>

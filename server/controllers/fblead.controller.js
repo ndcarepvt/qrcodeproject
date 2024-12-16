@@ -61,7 +61,7 @@ const addFBLead = async (req, res) => {
         }
 
         // Send campaign details
-        await sendOzentol(number, campaign);
+        // await sendOzentol(number, campaign);
 
         // Prepare CRM data
         const crmData = {
@@ -289,7 +289,7 @@ const sendOzentolInternational = async (phoneNumber,campaign_name) =>{
         url: 'https://cx.ozonetel.com/cloudAgentRestAPI/index.php/CloudAgent/CloudAgentAPI/addCamapaignData',
         headers: {
           accept: 'application/json',
-          'content-type': 'multipart/form-data; boundary=---011000010111000001101001'
+          'content-type': 'multipart/form-data; boundary=---011000010111000001101001',
         },
         data: `-----011000010111000001101001\r\nContent-Disposition: form-data; name="action"\r\n\r\nstart\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="Priority"\r\n\r\n1\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="api_key"\r\n\r\nKK4d7f41a640fc1c736f1d36e89212e60f\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="campaign_name"\r\n\r\n${campaign_name}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="PhoneNumber"\r\n\r\n${phoneNumber}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="checkDuplicate"\r\n\r\nfalse\r\n-----011000010111000001101001--`
       };
