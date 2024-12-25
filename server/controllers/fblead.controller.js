@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 import axios from 'axios'
 
 const addFBLead = async (req, res) => {
-    
+
     const {
         name, email, contact, city, message, sheetname,
         fbid, platform, formname, adincharge, emailtitle
@@ -38,10 +38,10 @@ const addFBLead = async (req, res) => {
             return res.status(409).json({ success: false, message: `Lead with ID ${fbid} already exists` });
         }
 
-         // set phoneNumber
-         let number = contact
+        // set phoneNumber
+        let number = contact
 
-         if (number.toString().length > 10) {
+        if (number.toString().length > 10) {
             // console.log(number.toString().length);
             number = number.toString().slice(-10); // Ensure it's sliced from the number's string representation
             console.log(number);
@@ -68,7 +68,7 @@ const addFBLead = async (req, res) => {
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact:number,
+            contact: number,
             city: city.toLowerCase(),
         };
 
@@ -84,7 +84,7 @@ const addFBLead = async (req, res) => {
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact:number.toString(),
+            contact: number.toString(),
             city: city.toLowerCase(),
             platform: platform,
             formname: formnameVal,
@@ -155,10 +155,10 @@ const FBLeadMail = async (lead, emailtitle) => {
         <p><strong>AdIncharge:</strong> ${lead.adincharge}</p>
     `;
 
-let emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
-let formname = lead.formname.toLowerCase()
+    let emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
+    let formname = lead.formname.toLowerCase()
 
-    if(formname.includes('kidney')){
+    if (formname.includes('kidney')) {
         emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com"
     }
 
@@ -260,7 +260,13 @@ const FBLeadMailInternational = async (lead, emailtitle) => {
         <p><strong>AdIncharge:</strong> ${lead.adincharge}</p>
     `;
 
-let emailList = "githubndcare@gmail.com, internationalfbqueries@gmail.com, raghav@nirogamusa.in"
+    const formname = lead.formname.toLowerCase()
+
+    let emailList = "githubndcare@gmail.com, internationalfbqueries@gmail.com, raghav@nirogamusa.in"
+
+    if (formname.includes('kidney')) {
+        emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com"
+    }
 
 
     async function main() {
@@ -282,56 +288,56 @@ let emailList = "githubndcare@gmail.com, internationalfbqueries@gmail.com, ragha
 
 }
 
-const sendOzentolInternational = async (phoneNumber,campaign_name) =>{
+const sendOzentolInternational = async (phoneNumber, campaign_name) => {
 
     const options = {
         method: 'POST',
         url: 'https://cx.ozonetel.com/cloudAgentRestAPI/index.php/CloudAgent/CloudAgentAPI/addCamapaignData',
         headers: {
-          accept: 'application/json',
-          'content-type': 'multipart/form-data; boundary=---011000010111000001101001'
+            accept: 'application/json',
+            'content-type': 'multipart/form-data; boundary=---011000010111000001101001'
         },
         data: `-----011000010111000001101001\r\nContent-Disposition: form-data; name="action"\r\n\r\nstart\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="Priority"\r\n\r\n1\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="api_key"\r\n\r\nKK4d7f41a640fc1c736f1d36e89212e60f\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="campaign_name"\r\n\r\n${campaign_name}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="PhoneNumber"\r\n\r\n${phoneNumber}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="checkDuplicate"\r\n\r\nfalse\r\n-----011000010111000001101001--`
-      };
-      
-      axios
+    };
+
+    axios
         .request(options)
         .then(function (response) {
-          console.log(response.data);
+            console.log(response.data);
         })
         .catch(function (error) {
-          console.error(error);
+            console.error(error);
         });
 }
 
-const getPlainNumber = (number) =>{
+const getPlainNumber = (number) => {
     const countryCodes = {
         'USA': '+1',
         'UK': '+44',
         'Canada': '+1',
         'Dubai': '+971'
-      };
-      
-      function detectCountryAndExtractNumber(phoneNumber) {
-        for (const [country, code] of Object.entries(countryCodes)) {
-          // Check if the phone number starts with the country code
-          if (phoneNumber.startsWith(code)) {
-            // Remove the country code and return the plain number
-            const plainNumber = phoneNumber.slice(code.length);
-            return { plainNumber };
-          } 
-        }
-      }
-      
-      // Test with the UK phone number
-      const result = detectCountryAndExtractNumber(number);
-      const phoneNumber = result.plainNumber;
+    };
 
-      return phoneNumber
+    function detectCountryAndExtractNumber(phoneNumber) {
+        for (const [country, code] of Object.entries(countryCodes)) {
+            // Check if the phone number starts with the country code
+            if (phoneNumber.startsWith(code)) {
+                // Remove the country code and return the plain number
+                const plainNumber = phoneNumber.slice(code.length);
+                return { plainNumber };
+            }
+        }
+    }
+
+    // Test with the UK phone number
+    const result = detectCountryAndExtractNumber(number);
+    const phoneNumber = result.plainNumber;
+
+    return phoneNumber
 }
 
 const addFBLeadInternational = async (req, res) => {
-    
+
     const {
         name, email, contact, city, message,
         fbid, platform, formname, adincharge, emailtitle
@@ -367,14 +373,14 @@ const addFBLeadInternational = async (req, res) => {
         }
 
         // const number = getPlainNumber(contact)
-       
 
-         // Prepare CRM data
-         const crmData = {
+
+        // Prepare CRM data
+        const crmData = {
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact:contact.toString(),
+            contact: contact.toString(),
             city: city.toLowerCase(),
         };
 
@@ -390,15 +396,15 @@ const addFBLeadInternational = async (req, res) => {
 
         // Handle address
         const address = await onAddressHandler(city);
-        
-       
+
+
         // Prepare lead data
         const leadData = new FBLead({
             fbid,
             name: name.toLowerCase(),
             email: email.toLowerCase(),
             message: message.toLowerCase(),
-            contact:contact.toString(),
+            contact: contact.toString(),
             city: city.toLowerCase(),
             platform: platform,
             formname: formnameVal,
@@ -423,5 +429,35 @@ const addFBLeadInternational = async (req, res) => {
 };
 
 
+const FBLeadNational = async (req, res) => {
 
-export { addFBLead, addFBLeadInternational }
+    const country = "India";
+    const limit = parseInt(req.query.limit) || 100;
+
+    try {
+        const data = await FBLead.find({country}).limit(limit);
+        return res.send({success:true, message:"Fblead Fetched Successfully", data});
+    } catch (error) {
+        console.error("Error fetching lead data:", error);
+        return res.status(500).json({ success: false, message: "An error occurred while fetching lead data" });
+    }
+}
+
+
+const FBLeadInternational = async (req, res) => {
+    const { limit } = req.query;
+    const parsedLimit = parseInt(limit, 10) || 100;
+
+    try {
+
+        // Fetch documents where country is not "India"
+        const data = await FBLead.find({ country: { $ne: "India" } }).limit(parsedLimit);
+        return res.status(200).json({ success: true, message: "FBLead fetched successfully.", data });
+    } catch (error) {
+        console.error("Error fetching lead data:", error);
+        return res.status(500).json({ success: false, message: "An error occurred while fetching lead data." });
+    }
+};
+
+
+export { addFBLead, addFBLeadInternational, FBLeadNational, FBLeadInternational }
