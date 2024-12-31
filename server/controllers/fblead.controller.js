@@ -265,7 +265,7 @@ const FBLeadMailInternational = async (lead, emailtitle) => {
     let emailList = "githubndcare@gmail.com, internationalfbqueries@gmail.com, raghav@nirogamusa.in"
 
     if (formname.includes('kidney')) {
-        emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com, internationalfbqueries@gmail.com"
+        emailList = "githubndcare@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com, internationalfbqueries@gmail.com"
     }
 
 
