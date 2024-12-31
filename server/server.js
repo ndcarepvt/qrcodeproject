@@ -52,7 +52,7 @@ app.get('/api/wts', async (req, res) => {
 
   const url = `https://${apiKey}:${apiToken}@${subDomain}/v2/accounts/${accountSid}/messages`;
 
-const data = {
+  const data = {
     "custom_data": "82VAPYGD",
     "status_callback": "https://3b8e-112-196-103-210.ngrok-free.app/api/whatsappstatus",
     "whatsapp": {
@@ -92,11 +92,11 @@ const data = {
           }
         }
       }]
-   }
-}
+    }
+  }
 
 
-try {
+  try {
     const response = await axios.post(url, data, {
       headers: {
         'Content-Type': 'application/json'
@@ -118,8 +118,8 @@ try {
 
 app.post('/api/whatsappstatus', (req, res) => {
   console.log("req.body", req.body);
-  console.log("req.body.whatsapp",req.body.whatsapp);
-  console.log("req.body.whatsapp.messages",req.body.whatsapp.messages);
+  console.log("req.body.whatsapp", req.body.whatsapp);
+  console.log("req.body.whatsapp.messages", req.body.whatsapp.messages);
 
   return res.send({ success: true, message: "test" })
 })

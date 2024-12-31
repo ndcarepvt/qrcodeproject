@@ -265,7 +265,7 @@ const FBLeadMailInternational = async (lead, emailtitle) => {
     let emailList = "githubndcare@gmail.com, internationalfbqueries@gmail.com, raghav@nirogamusa.in"
 
     if (formname.includes('kidney')) {
-        emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com"
+        emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com, internationalfbqueries@gmail.com"
     }
 
 
@@ -430,18 +430,39 @@ const addFBLeadInternational = async (req, res) => {
 
 
 const FBLeadNational = async (req, res) => {
-
     const country = "India";
     const limit = parseInt(req.query.limit) || 100;
 
     try {
-        const data = await FBLead.find({country}).limit(limit);
-        return res.send({success:true, message:"Fblead Fetched Successfully", data});
+        const data = await FBLead.aggregate([
+            { $match: { country } }, // Match documents with country "India"
+            { $sort: { _id: -1 } },  // Sort by `_id` in descending order (latest first)
+            {
+                $group: {
+                    _id: "$email", // Group by `email` to ensure uniqueness
+                    doc: { $first: "$$ROOT" } // Keep the latest document for each unique `email`
+                }
+            },
+            { $replaceRoot: { newRoot: "$doc" } }, // Replace the root with the original document
+            { $sort: { _id: -1 } },  // Sort again by `_id` to ensure the latest leads are at the top
+            { $limit: limit } // Limit the results to the specified count
+        ]);
+
+        return res.send({
+            success: true,
+            message: "FBLead Fetched Successfully",
+            data,
+        });
     } catch (error) {
         console.error("Error fetching lead data:", error);
-        return res.status(500).json({ success: false, message: "An error occurred while fetching lead data" });
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching lead data",
+        });
     }
-}
+};
+
+
 
 
 const FBLeadInternational = async (req, res) => {
@@ -449,15 +470,54 @@ const FBLeadInternational = async (req, res) => {
     const parsedLimit = parseInt(limit, 10) || 100;
 
     try {
+        // Fetch documents where country is not "India", sorted in descending order
+        const data = await FBLead.find({ country: { $ne: "India" } })
+            .sort({ _id: -1 }) // Sort in descending order by `_id`
+            .limit(parsedLimit);
 
-        // Fetch documents where country is not "India"
-        const data = await FBLead.find({ country: { $ne: "India" } }).limit(parsedLimit);
-        return res.status(200).json({ success: true, message: "FBLead fetched successfully.", data });
+        return res.status(200).json({
+            success: true,
+            message: "FBLead fetched successfully.",
+            data,
+        });
     } catch (error) {
         console.error("Error fetching lead data:", error);
-        return res.status(500).json({ success: false, message: "An error occurred while fetching lead data." });
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching lead data.",
+        });
     }
 };
 
 
-export { addFBLead, addFBLeadInternational, FBLeadNational, FBLeadInternational }
+
+const ozentolCall = async (req, res) => {
+    const url = "https://cx.ozonetel.com/ca_apis/AgentManualDial";
+
+    const data = {
+        userName: 'ndayurveda',
+        agentID: 'QCD',
+        campaignName: 'Tollfree_18886245925',
+        customerNumber: '14077770062'
+    };
+
+    try {
+        const response = await axios.post(url, { data }, {
+            headers: {
+                accept: 'application',
+                apiKey: 'KK4d7f41a640fc1c736f1d36e89212e60f'
+            }
+        })
+
+        console.log('Message sent successfully:', response.data);
+        // res.render(response.data);
+        res.send({ success: true, message: response.data })
+    } catch (error) {
+        console.error('Error sending message:', error.response ? error.response.data : error.message);
+        res.status(500).json({ success: false, message: "Server error", error: error.message });
+    }
+}
+
+
+
+export { addFBLead, addFBLeadInternational, FBLeadNational, FBLeadInternational, ozentolCall }
