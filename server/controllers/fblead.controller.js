@@ -466,12 +466,23 @@ const FBLeadNational = async (req, res) => {
 
 
 const FBLeadInternational = async (req, res) => {
+    const { userId } = req.body;
+    
+    if(userId !== process.env.LEAD_SECRET){
+        return res.status(401).json({ success: false, message: "Not Authorized" });
+    }
+
     const { limit } = req.query;
     const parsedLimit = parseInt(limit, 10) || 100;
 
     try {
-        // Fetch documents where country is not "India", sorted in descending order
-        const data = await FBLead.find({ country: { $ne: "India" } })
+        // Fetch documents where country is not "India" or city is not "India", sorted in descending order
+        const data = await FBLead.find({
+            $and: [
+                { country: { $ne: "India" } },
+                { city: { $ne: "india" } }
+            ]
+        })
             .sort({ _id: -1 }) // Sort in descending order by `_id`
             .limit(parsedLimit);
 
@@ -491,8 +502,9 @@ const FBLeadInternational = async (req, res) => {
 
 
 
+
 const ozentolCall = async (req, res) => {
-    const url = "https://cx.ozonetel.com/ca_apis/AgentManualDial";
+    const url = "https://api1.getkookoo.com/CAServices/AgentManualDial.php?api_key=KK4d7f41a640fc1c736f1d36e89212e60f&username=ndayurveda&agentID=QCD&campaignName=Tollfree_18886245925&customerNumber=14077770062&UCID=true&uui=%7B3%7D";
 
     const data = {
         userName: 'ndayurveda',
@@ -502,12 +514,7 @@ const ozentolCall = async (req, res) => {
     };
 
     try {
-        const response = await axios.post(url, { data }, {
-            headers: {
-                accept: 'application',
-                apiKey: 'KK4d7f41a640fc1c736f1d36e89212e60f'
-            }
-        })
+        const response = await axios.post(url);
 
         console.log('Message sent successfully:', response.data);
         // res.render(response.data);
