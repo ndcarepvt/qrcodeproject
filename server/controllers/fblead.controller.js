@@ -430,6 +430,13 @@ const addFBLeadInternational = async (req, res) => {
 
 
 const FBLeadNational = async (req, res) => {
+
+    const { userId } = req.body;
+
+    if (userId !== process.env.LEAD_SECRET) {
+        return res.status(401).json({ success: false, message: "Not Authorized" });
+    }
+
     const country = "India";
     const limit = parseInt(req.query.limit) || 100;
 
@@ -467,13 +474,13 @@ const FBLeadNational = async (req, res) => {
 
 const FBLeadInternational = async (req, res) => {
     const { userId } = req.body;
-    
-    if(userId !== process.env.LEAD_SECRET){
+
+    if (userId !== process.env.LEAD_SECRET) {
         return res.status(401).json({ success: false, message: "Not Authorized" });
     }
 
-    const { limit } = req.query;
-    const parsedLimit = parseInt(limit, 10) || 100;
+    const { limit, } = req.query;
+    const parsedLimit = parseInt(limit, 10) || 10;
 
     try {
         // Fetch documents where country is not "India" or city is not "India", sorted in descending order
