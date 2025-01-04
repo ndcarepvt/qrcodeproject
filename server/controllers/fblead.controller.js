@@ -75,8 +75,10 @@ const addFBLead = async (req, res) => {
             country: "national",
         };
 
+        
+
         // Submit CRM data
-        const CRMResult = await onCRMDataSubmit(crmData);
+        const CRMResult = await onCRMDataSubmit(crmData, formnameLower);
 
         // Handle address
         const address = await onAddressHandler(city);
@@ -112,10 +114,16 @@ const addFBLead = async (req, res) => {
 };
 
 
-const onCRMDataSubmit = async (data) => {
+const onCRMDataSubmit = async (data, formname) => {
     console.log(data);
 
     const url = 'https://ndayurveda.info/api/query/facebook'
+
+    if(formname.includes("kidney")){
+        url = 'https://ndcarenirogam.com/api/query/facebook'
+    } else {
+        url = 'https://ndayurveda.info/api/query/facebook'
+    }
 
     try {
         const response = axios.post(url, data)
@@ -388,8 +396,10 @@ const addFBLeadInternational = async (req, res) => {
             country: "international",
         };
 
+        const formnameLower = formname.toLowerCase();
+
         // Submit CRM data and save lead
-        const CRMResult = await onCRMDataSubmit(crmData);
+        const CRMResult = await onCRMDataSubmit(crmData, formnameLower);
 
         // Determine form name and campaign
         let formnameVal = formname.toLowerCase();
