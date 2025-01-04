@@ -117,7 +117,7 @@ const addFBLead = async (req, res) => {
 const onCRMDataSubmit = async (data, formname) => {
     console.log(data);
 
-    const url = 'https://ndayurveda.info/api/query/facebook'
+    let url = 'https://ndayurveda.info/api/query/facebook'
 
     if(formname.includes("kidney")){
         url = 'https://ndcarenirogam.com/api/query/facebook'
