@@ -63,6 +63,8 @@ const addFBLead = async (req, res) => {
         // Send campaign details
         await sendOzentol(number, campaign);
 
+        
+
         // Prepare CRM data
         const crmData = {
             name: name.toLowerCase(),
@@ -70,6 +72,7 @@ const addFBLead = async (req, res) => {
             message: message.toLowerCase(),
             contact: number,
             city: city.toLowerCase(),
+            country: "national",
         };
 
         // Submit CRM data
@@ -382,6 +385,7 @@ const addFBLeadInternational = async (req, res) => {
             message: message.toLowerCase(),
             contact: contact.toString(),
             city: city.toLowerCase(),
+            country: "international",
         };
 
         // Submit CRM data and save lead
