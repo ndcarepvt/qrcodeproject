@@ -6,7 +6,7 @@ const addFBLead = async (req, res) => {
 
     const {
         name, email, contact, city, message, sheetname,
-        fbid, platform, formname, adincharge, emailtitle
+        fbid, platform, formname, adincharge, emailtitle, disease
     } = req.body;
 
     try {
@@ -73,6 +73,7 @@ const addFBLead = async (req, res) => {
             contact: number,
             city: city.toLowerCase(),
             country: "national",
+            disease:disease
         };
 
         
@@ -351,7 +352,7 @@ const addFBLeadInternational = async (req, res) => {
 
     const {
         name, email, contact, city, message,
-        fbid, platform, formname, adincharge, emailtitle
+        fbid, platform, formname, adincharge, emailtitle, disease
     } = req.body;
 
     try {
@@ -394,6 +395,7 @@ const addFBLeadInternational = async (req, res) => {
             contact: contact.toString(),
             city: city.toLowerCase(),
             country: "international",
+            disease:disease
         };
 
         const formnameLower = formname.toLowerCase();
