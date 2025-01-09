@@ -11,12 +11,6 @@ const addFBLead = async (req, res) => {
 
     try {
 
-        // Validate required fields
-        if (![name, email, contact, city, message, fbid, formname, adincharge].every(Boolean)) {
-            console.error("Missing required fields");
-            return res.status(400).json({ success: false, message: "Missing required fields" });
-        }
-
         // Email Send
         const leadMail = {
             fbid,
@@ -30,6 +24,12 @@ const addFBLead = async (req, res) => {
             adincharge,
         }
         await FBLeadMail(leadMail, emailtitle);
+
+        // Validate required fields
+        if (![name, email, contact, city, fbid, formname, adincharge].every(Boolean)) {
+            console.error("Missing required fields");
+            return res.status(400).json({ success: false, message: "Missing required fields" });
+        }
 
         // Check for existing entry
         const existingEntry = await FBLead.findOne({ fbid });
@@ -95,8 +95,8 @@ const addFBLead = async (req, res) => {
             platform: platform,
             formname: formnameVal,
             adincharge,
-            state: address.stateVal,
-            country: address.countryVal,
+            state: address?.stateVal,
+            country: address?.countryVal,
         });
 
         // save lead
@@ -358,7 +358,7 @@ const addFBLeadInternational = async (req, res) => {
     try {
 
         // Validate required fields
-        if (![name, email, contact, city, message, fbid, formname, adincharge].every(Boolean)) {
+        if (![name, email, contact, city, fbid, formname, adincharge].every(Boolean)) {
             console.error("Missing required fields");
             return res.status(400).json({ success: false, message: "Missing required fields" });
         }
@@ -425,8 +425,8 @@ const addFBLeadInternational = async (req, res) => {
             platform: platform,
             formname: formnameVal,
             adincharge,
-            state: address.stateVal,
-            country: address.countryVal,
+            state: address?.stateVal,
+            country: address?.countryVal,
         });
 
         // save lead
