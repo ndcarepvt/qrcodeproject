@@ -1,0 +1,46 @@
+import moment from 'moment-timezone';
+
+
+// Function to check if the current time is within business hours
+function isWithinBusinessHours(timeZone) {
+    try {
+        // Get the current time in the specified time zone
+        const localTime = moment.tz(timeZone);
+
+        console.log(localTime)
+        // Extract the current hour in 24-hour format
+        const currentHour = localTime.hour();
+
+        console.log(timeZone, currentHour);
+        // Business hours: 8 AM to 8 PM
+        return currentHour >= 8 && currentHour < 20;
+    } catch (error) {
+        console.error(`Error with time zone ${timeZone}:`, error.message);
+        return false;
+    }
+}
+
+// Function to determine the timezone based on form name
+export const checkTimezone = (formname) => {
+    let singleTimeZone;
+    let formName = formname.toLowerCase(); // Fixed typo here
+
+    if (formName.includes('australia')) {
+        singleTimeZone = "Australia/Sydney";
+    } else if (formName.includes('canada')) {
+        singleTimeZone = "America/Vancouver";
+    } else if (formName.includes('uk')) {
+        singleTimeZone = "Europe/London";
+    } else if (formName.includes('usa')) {
+        singleTimeZone = "America/Toronto";
+    } else {
+        console.error(`No timezone matched for form name: ${formname}`);
+        return;
+    }
+
+    console.log(`Determined timezone: ${singleTimeZone}`);
+
+    const isAllowed = isWithinBusinessHours(singleTimeZone);
+    console.log(`Call allowed in ${formname}: ${isAllowed}`);
+    return isAllowed;
+};

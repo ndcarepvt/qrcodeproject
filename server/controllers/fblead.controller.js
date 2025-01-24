@@ -1,6 +1,7 @@
 import { FBLead } from "../models/facebookLead.model.js";
 import nodemailer from 'nodemailer'
 import axios from 'axios'
+import { checkTimezone } from "../services/fbleadservice.js";
 
 const addFBLead = async (req, res) => {
 
@@ -63,7 +64,7 @@ const addFBLead = async (req, res) => {
         // Send campaign details
         await sendOzentol(number, campaign);
 
-        
+
 
         // Prepare CRM data
         const crmData = {
@@ -73,10 +74,10 @@ const addFBLead = async (req, res) => {
             contact: number,
             city: city.toLowerCase(),
             country: "national",
-            disease:disease
+            disease: disease
         };
 
-        
+
 
         // Submit CRM data
         const CRMResult = await onCRMDataSubmit(crmData, formnameLower);
@@ -120,11 +121,7 @@ const onCRMDataSubmit = async (data, formname) => {
 
     let url = 'https://ndayurveda.info/api/query/facebook'
 
-    if(formname.includes("kidney")){
-        url = 'https://ndcarenirogam.com/api/query/facebook'
-    } else {
-        url = 'https://ndayurveda.info/api/query/facebook'
-    }
+    
 
     try {
         const response = axios.post(url, data)
@@ -312,7 +309,7 @@ const sendOzentolInternational = async (phoneNumber, campaign_name) => {
         data: `-----011000010111000001101001\r\nContent-Disposition: form-data; name="action"\r\n\r\nstart\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="Priority"\r\n\r\n1\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="api_key"\r\n\r\nKK4d7f41a640fc1c736f1d36e89212e60f\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="campaign_name"\r\n\r\n${campaign_name}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="PhoneNumber"\r\n\r\n${phoneNumber}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="checkDuplicate"\r\n\r\nfalse\r\n-----011000010111000001101001--`
     };
 
-    axios
+    await axios
         .request(options)
         .then(function (response) {
             console.log(response.data);
@@ -322,31 +319,7 @@ const sendOzentolInternational = async (phoneNumber, campaign_name) => {
         });
 }
 
-const getPlainNumber = (number) => {
-    const countryCodes = {
-        'USA': '+1',
-        'UK': '+44',
-        'Canada': '+1',
-        'Dubai': '+971'
-    };
 
-    function detectCountryAndExtractNumber(phoneNumber) {
-        for (const [country, code] of Object.entries(countryCodes)) {
-            // Check if the phone number starts with the country code
-            if (phoneNumber.startsWith(code)) {
-                // Remove the country code and return the plain number
-                const plainNumber = phoneNumber.slice(code.length);
-                return { plainNumber };
-            }
-        }
-    }
-
-    // Test with the UK phone number
-    const result = detectCountryAndExtractNumber(number);
-    const phoneNumber = result.plainNumber;
-
-    return phoneNumber
-}
 
 const addFBLeadInternational = async (req, res) => {
 
@@ -395,7 +368,7 @@ const addFBLeadInternational = async (req, res) => {
             contact: contact.toString(),
             city: city.toLowerCase(),
             country: "international",
-            disease:disease
+            disease: disease
         };
 
         const formnameLower = formname.toLowerCase();
@@ -405,10 +378,17 @@ const addFBLeadInternational = async (req, res) => {
 
         // Determine form name and campaign
         let formnameVal = formname.toLowerCase();
-        let campaign = "Ivr_Common";
+        // let campaign = "Ivr_Common";
+        let campaign = "Common_Ivr"
+        // const isAllowed = checkTimezone(formname)
 
-        // Send campaign details
-        // await sendOzentolInternational(number, campaign);
+        // console.log(isAllowed)
+
+        // if (isAllowed) {
+        //     // Send campaign details
+        //     await sendOzentolInternational(contact, campaign);
+        // }
+
 
         // Handle address
         const address = await onAddressHandler(city);
