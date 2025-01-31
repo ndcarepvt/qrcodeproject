@@ -12,7 +12,8 @@ function isWithinBusinessHours(timeZone) {
         const currentHour = localTime.hour();
 
         console.log(timeZone, currentHour);
-        // Business hours: 8 AM to 8 PM
+        
+        // Calling hours: 8 AM to 8 PM
         return currentHour >= 8 && currentHour < 20;
     } catch (error) {
         console.error(`Error with time zone ${timeZone}:`, error.message);
@@ -28,15 +29,16 @@ export const checkTimezone = (formname) => {
     if (formName.includes('australia')) {
         singleTimeZone = "Australia/Sydney";
     } else if (formName.includes('canada')) {
-        singleTimeZone = "America/Vancouver";
+        singleTimeZone = "America/Toronto";  // Fixed: Changed "America/Ontario" to "America/Toronto"
     } else if (formName.includes('uk')) {
         singleTimeZone = "Europe/London";
     } else if (formName.includes('usa')) {
-        singleTimeZone = "America/Toronto";
+        singleTimeZone = "America/New_York"; // USA generally uses "America/New_York"
     } else {
-        console.error(`No timezone matched for form name: ${formname}`);
+        console.error(`No timezone matched for form name: ${formName}`);
         return;
     }
+    
 
     console.log(`Determined timezone: ${singleTimeZone}`);
 

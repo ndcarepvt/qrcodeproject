@@ -121,7 +121,7 @@ const onCRMDataSubmit = async (data, formname) => {
 
     let url = 'https://ndayurveda.info/api/query/facebook'
 
-    
+
 
     try {
         const response = axios.post(url, data)
@@ -165,7 +165,7 @@ const FBLeadMail = async (lead, emailtitle) => {
     `;
 
     let emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
-    let formname = lead.formname.toLowerCase()
+    let formname = lead.formname.toLowerCase();
 
     if (formname.includes('kidney')) {
         emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com"
@@ -320,7 +320,6 @@ const sendOzentolInternational = async (phoneNumber, campaign_name) => {
 }
 
 
-
 const addFBLeadInternational = async (req, res) => {
 
     const {
@@ -358,6 +357,13 @@ const addFBLeadInternational = async (req, res) => {
         }
 
         // const number = getPlainNumber(contact)
+        // Send Message to Socket
+        const messageObj = {
+            event: "lead-recieved",
+            data: emailtitle
+        }
+
+        sendMessageToSocketId(messageObj);
 
 
         // Prepare CRM data
@@ -380,14 +386,14 @@ const addFBLeadInternational = async (req, res) => {
         let formnameVal = formname.toLowerCase();
         // let campaign = "Ivr_Common";
         let campaign = "Common_Ivr"
-        // const isAllowed = checkTimezone(formname)
+        const isAllowed = checkTimezone(emailtitle)
 
-        // console.log(isAllowed)
+        console.log(isAllowed)
 
-        // if (isAllowed) {
-        //     // Send campaign details
-        //     await sendOzentolInternational(contact, campaign);
-        // }
+        if (isAllowed) {
+            // Send campaign details
+            await sendOzentolInternational(contact, campaign);
+        }
 
 
         // Handle address
