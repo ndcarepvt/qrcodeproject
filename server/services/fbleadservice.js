@@ -46,3 +46,5 @@ export const checkTimezone = (formname) => {
     console.log(`Call allowed in ${formname}: ${isAllowed}`);
     return isAllowed;
 };
+
+

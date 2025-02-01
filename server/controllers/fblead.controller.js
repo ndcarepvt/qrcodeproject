@@ -1,8 +1,9 @@
 import { FBLead } from "../models/facebookLead.model.js";
-import nodemailer from 'nodemailer'
 import axios from 'axios'
 import { checkTimezone } from "../services/fbleadservice.js";
 import { sendMessageToSocketId } from "../server.js";
+import { FBLeadMail, FBLeadMailInternational, FBLeadMailReport, onCRMDataSubmit, sendOzentol, sendOzentolInternational } from "../helpers/fbleadhelper.js";
+import cron from 'node-cron';
 
 const addFBLead = async (req, res) => {
 
@@ -54,6 +55,7 @@ const addFBLead = async (req, res) => {
         const formnameLower = formname.toLowerCase();
         let formnameVal = formname.toLowerCase();
         let campaign = "Ivr_Common";
+        let callinitiated = 0;
 
         if (formnameLower.includes("kidney")) {
             formnameVal = "kidney";
@@ -63,9 +65,10 @@ const addFBLead = async (req, res) => {
         }
 
         // Send campaign details
-        await sendOzentol(number, campaign);
-
-
+        const response = await sendOzentol(number, campaign);
+        if (response.status === "SUCCESS") {
+            callinitiated = 1;
+        }
 
         // Prepare CRM data
         const crmData = {
@@ -77,8 +80,6 @@ const addFBLead = async (req, res) => {
             country: "national",
             disease: disease
         };
-
-
 
         // Submit CRM data
         const CRMResult = await onCRMDataSubmit(crmData, formnameLower);
@@ -99,6 +100,7 @@ const addFBLead = async (req, res) => {
             adincharge,
             state: address?.stateVal,
             country: address?.countryVal,
+            countrysource: "national",
         });
 
         // save lead
@@ -116,90 +118,6 @@ const addFBLead = async (req, res) => {
     }
 };
 
-
-const onCRMDataSubmit = async (data, formname) => {
-    console.log(data);
-
-    let url = 'https://ndayurveda.info/api/query/facebook'
-
-
-
-    try {
-        const response = axios.post(url, data)
-        if (response) {
-            console.log(response);
-            console.log({ success: true, message: "Add Patient Lead Data in CRM" });
-        } else {
-            console.log({ success: false, message: "Error : Add Patient Lead Data in CRM" });
-            console.log(response.data);
-        }
-
-        return "true"
-    } catch (error) {
-        console.log({ success: false, message: "Error : Add Patient Lead Data in CRM" });
-        console.log(error);
-        return "false"
-    }
-}
-
-
-const FBLeadMail = async (lead, emailtitle) => {
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        secure: true,
-        port: 465,
-        auth: {
-            user: 'githubndcare@gmail.com',
-            pass: 'aenevoxgdfsnpuoi'
-        }
-    });
-
-
-    const formattedData = `
-        <p><strong>Name:</strong> ${lead.name}</p>
-        <p><strong>Email:</strong> ${lead.email}</p>
-        <p><strong>Message:</strong> ${lead.message}</p>
-        <p><strong>PhoneNumber:</strong> ${lead.contact}</p>
-        <p><strong>City:</strong> ${lead.city}</p>
-        <p><strong>Formname:</strong> ${lead.formname}</p>
-        <p><strong>AdIncharge:</strong> ${lead.adincharge}</p>
-    `;
-
-    let emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
-    let formname = lead.formname.toLowerCase();
-
-    if (formname.includes('kidney')) {
-        emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com"
-    }
-
-    // if(lead.adincharge == "Naman"){
-    //     emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
-    // } else if(lead.adincharge == "Raghav"){
-    //     // emailList = "sitedigital4@gmail.com"
-    //     emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
-    // }else {
-    //     emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
-    // }
-
-
-    async function main() {
-        // send mail with defined transport object
-        const info = await transporter.sendMail({
-            from: 'githubndcare@gmail.com', // sender address
-            to: emailList, // list of receivers
-            subject: emailtitle, // Subject line
-            html: formattedData, // plain text body
-        });
-
-        console.log("Message sent: %s", info.messageId);
-        console.log("email send Successfull");
-
-        // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
-    }
-
-    main().catch(console.error);
-
-}
 
 const onAddressHandler = async (city) => {
     let stateVal = ""
@@ -219,106 +137,8 @@ const onAddressHandler = async (city) => {
     }
 }
 
-const sendOzentol = async (number, campaign) => {
-
-
-    const options = {
-        method: 'POST',
-        url: 'https://in-ccaas.ozonetel.com/cloudAgentRestAPI/index.php/CloudAgent/CloudAgentAPI/addCamapaignData',
-        headers: {
-            accept: 'application/json',
-            'content-type': 'multipart/form-data; boundary=---011000010111000001101001'
-        },
-        data: `-----011000010111000001101001\r\nContent-Disposition: form-data; name="PhoneNumber"\r\n\r\n${number}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="api_key"\r\n\r\nKK21eebdac0087e72bcbae3c8f83c9f658\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="campaign_name"\r\n\r\n${campaign}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="action"\r\n\r\nstart\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="Priority"\r\n\r\n1\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="checkDuplicate"\r\n\r\nfalse\r\n-----011000010111000001101001--`
-    };
-
-    await axios
-        .request(options)
-        .then(function (response) {
-            console.log("Success, IVR Started");
-            console.log(response.data);
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
-
-
-}
-
 
 // INTERNATIONAL FUNCTIONS OR API STARTED
-
-const FBLeadMailInternational = async (lead, emailtitle) => {
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        secure: true,
-        port: 465,
-        auth: {
-            user: 'githubndcare@gmail.com',
-            pass: 'aenevoxgdfsnpuoi'
-        }
-    });
-
-
-    const formattedData = `
-        <p><strong>Name:</strong> ${lead.name}</p>
-        <p><strong>Email:</strong> ${lead.email}</p>
-        <p><strong>Message:</strong> ${lead.message}</p>
-        <p><strong>PhoneNumber:</strong> ${lead.contact}</p>
-        <p><strong>City:</strong> ${lead.city}</p>
-        <p><strong>Formname:</strong> ${lead.formname}</p>
-        <p><strong>AdIncharge:</strong> ${lead.adincharge}</p>
-    `;
-
-    const formname = lead.formname.toLowerCase()
-
-    let emailList = "githubndcare@gmail.com, internationalfbqueries@gmail.com, raghav@nirogamusa.in"
-
-    if (formname.includes('kidney')) {
-        emailList = "githubndcare@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com, internationalfbqueries@gmail.com"
-    }
-
-
-    async function main() {
-        // send mail with defined transport object
-        const info = await transporter.sendMail({
-            from: 'githubndcare@gmail.com', // sender address
-            to: emailList, // list of receivers
-            subject: emailtitle, // Subject line
-            html: formattedData, // plain text body
-        });
-
-        console.log("Message sent: %s", info.messageId);
-        console.log("email send Successfull");
-
-        // Message sent: <d786aa62-4e0a-070a-47ed-0b0666549519@ethereal.email>
-    }
-
-    main().catch(console.error);
-
-}
-
-const sendOzentolInternational = async (phoneNumber, campaign_name) => {
-
-    const options = {
-        method: 'POST',
-        url: 'https://cx.ozonetel.com/cloudAgentRestAPI/index.php/CloudAgent/CloudAgentAPI/addCamapaignData',
-        headers: {
-            accept: 'application/json',
-            'content-type': 'multipart/form-data; boundary=---011000010111000001101001'
-        },
-        data: `-----011000010111000001101001\r\nContent-Disposition: form-data; name="action"\r\n\r\nstart\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="Priority"\r\n\r\n1\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="api_key"\r\n\r\nKK4d7f41a640fc1c736f1d36e89212e60f\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="campaign_name"\r\n\r\n${campaign_name}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="PhoneNumber"\r\n\r\n${phoneNumber}\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name="checkDuplicate"\r\n\r\nfalse\r\n-----011000010111000001101001--`
-    };
-
-    await axios
-        .request(options)
-        .then(function (response) {
-            console.log(response.data);
-        })
-        .catch(function (error) {
-            console.error(error);
-        });
-}
 
 
 const addFBLeadInternational = async (req, res) => {
@@ -385,16 +205,22 @@ const addFBLeadInternational = async (req, res) => {
 
         // Determine form name and campaign
         let formnameVal = formname.toLowerCase();
+
+
         // let campaign = "Ivr_Common";
         let campaign = "Common_Ivr"
-        // const isAllowed = checkTimezone(emailtitle)
+        let callinitiated = 0;
+        const isAllowed = checkTimezone(emailtitle)
 
-        // console.log(isAllowed)
+        console.log(isAllowed)
 
-        // if (isAllowed) {
-        //     // Send campaign details
-        //     await sendOzentolInternational(contact, campaign);
-        // }
+        if (isAllowed) {
+            // Send campaign details
+            const response = await sendOzentolInternational(contact, campaign);
+            if (response.status === "SUCCESS") {
+                callinitiated = 1;
+            }
+        }
 
 
         // Handle address
@@ -414,6 +240,8 @@ const addFBLeadInternational = async (req, res) => {
             adincharge,
             state: address?.stateVal,
             country: address?.countryVal,
+            countrysource: "international",
+            callinitiated,
         });
 
         // save lead
@@ -535,6 +363,165 @@ const ozentolCall = async (req, res) => {
     }
 }
 
+const getFBLeadCounts = async (req, res) => {
+    res.send("Lead count cron jobs scheduled at 9:00 AM & 9:00 PM.");
+}
+
+// Function to get lead counts for the given time range
+const getLeadCounts = async (startTime, endTime) => {
+    console.log("Fetching lead counts for the given time range:", startTime, endTime);
+    try {
+        // Adjust createdAt to be in UTC for querying
+        const nationalCount = await FBLead.countDocuments({
+            createdAt: { $gte: startTime, $lt: endTime },
+            countrysource: "national",
+        });
+
+        const internationalCount = await FBLead.countDocuments({
+            createdAt: { $gte: startTime, $lt: endTime },
+            countrysource: "international",
+        });
+
+        return { nationalCount, internationalCount };
+    } catch (error) {
+        console.error("Error fetching lead counts:", error);
+        return { nationalCount: 0, internationalCount: 0 };
+    }
+};
+
+// Schedule the 9:00 AM message (fetching data from 8:00 PM to 8:00 AM IST)
+cron.schedule("0 9 * * *", async () => {
+    console.log("Fetching lead counts for Day Shift (8:00 AM - 8:00 PM IST)");
+
+    // Get the current time in UTC
+    const nowUTC = new Date();
+
+    // Adjust to IST by adding 5 hours 30 minutes
+    const ISTOffset = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(nowUTC.getTime() + ISTOffset);
+
+    // Set the start time (8:00 AM IST)
+    const startTime = new Date(nowIST);
+    startTime.setHours(8, 0, 0, 0); // 8:00 AM IST
+    console.log("Start Time:", startTime);
+    console.log("Start Time:", startTime.getHours());
+
+    // Set the end time (8:00 PM IST)
+    const endTime = new Date(nowIST);
+    endTime.setHours(20, 0, 0, 0); // 8:00 PM IST
+    console.log("End Time:", endTime);
+    console.log("End Time:", endTime.getHours());
+
+    // Convert startTime and endTime to UTC for querying
+    const startTimeUTC = new Date(startTime.getTime() - ISTOffset);
+    const endTimeUTC = new Date(endTime.getTime() - ISTOffset);
+
+    console.log("Start Time (UTC):", startTimeUTC);
+    console.log("End Time (UTC):", endTimeUTC);
+
+    const { nationalCount, internationalCount } = await getLeadCounts(startTimeUTC, endTimeUTC);
+    console.log("National Count:", nationalCount);
+    console.log("International Count:", internationalCount);
+    const counts = { total: nationalCount + internationalCount, national: nationalCount, international: internationalCount };
+    const time = { startTime: startTime.getHours(), endTime: endTime.getHours() };
+    FBLeadMailReport(counts, time);
+    // await sendEmail("Day (8 AM - 8 PM)", nationalCount, internationalCount);
+});
+
+// Schedule the 9:00 PM message (fetching data from 8:00 AM to 8:00 PM IST)
+cron.schedule("0 21 * * *", async () => {
+    console.log("Fetching lead counts for Day Shift (8:00 AM - 8:00 PM IST)");
+
+    // Get the current time in UTC
+    const nowUTC = new Date();
+
+    // Adjust to IST by adding 5 hours 30 minutes
+    const ISTOffset = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(nowUTC.getTime() + ISTOffset);
+
+    // Set the start time (8:00 PM IST)
+    const startTime = new Date(nowIST);
+    startTime.setHours(20, 0, 0, 0); // 8:00 PM IST
+    console.log("Start Time:", startTime);
+    console.log("Start Time:", startTime.getHours());
+
+    // Set the end time (8:00 AM IST)
+    const endTime = new Date(nowIST);
+    endTime.setHours(8, 0, 0, 0); // 8:00 AM IST
+    console.log("End Time:", endTime);
+    console.log("End Time:", endTime.getHours());
+
+    // Convert startTime and endTime to UTC for querying
+    const startTimeUTC = new Date(startTime.getTime() - ISTOffset);
+    const endTimeUTC = new Date(endTime.getTime() - ISTOffset);
+
+    console.log("Start Time (UTC):", startTimeUTC);
+    console.log("End Time (UTC):", endTimeUTC);
+
+    const { nationalCount, internationalCount } = await getLeadCounts(startTimeUTC, endTimeUTC);
+    console.log("National Count:", nationalCount);
+    console.log("International Count:", internationalCount);
+    const counts = { total: nationalCount + internationalCount, national: nationalCount, international: internationalCount };
+    const time = { startTime: startTime.getHours(), endTime: endTime.getHours() };
+    FBLeadMailReport(counts, time);
+    // await sendEmail("Day (8 AM - 8 PM)", nationalCount, internationalCount);
+});
 
 
-export { addFBLead, addFBLeadInternational, FBLeadNational, FBLeadInternational, ozentolCall }
+// const sendWhatsappMessage = async (nationalCount, internationalCount) => {
+//     const apiKey = process.env.EXOTEL_API_KEY
+//     const apiToken = process.env.EXOTEL_API_TOKEN
+//     const subDomain = process.env.EXOTEL_SUBDOMAIN
+//     const accountSid = process.env.EXOTEL_ACCOUNTSID
+
+//     let message = `NationalLeads: ${nationalCount} InternationalLeads: ${internationalCount}`;
+
+//     const url = `https://${apiKey}:${apiToken}@${subDomain}/v2/accounts/${accountSid}/messages`;
+
+//     const data = {
+//         "custom_data": "82VAPYGD",
+//         "status_callback": "https://fd3c-112-196-103-210.ngrok-free.app/api/whatsappstatus",
+//         "whatsapp": {
+//             "messages": [{
+//                 "from": "+917791006006",
+//                 "to": ["+918556864699", "+918054237565"],
+//                 "content": {
+//                     "type": "template",
+//                     "template": {
+//                         "namespace": "caf00410_6458_4997_995a_4673fc93478d",
+//                         "name": "lead_count_template",
+//                         "language": {
+//                             "policy": "deterministic",
+//                             "code": "en"
+//                         },
+//                         "components": [
+//                             {
+//                                 "type": "body",
+//                                 "parameters": [{
+//                                     "type": "text",
+//                                     "text": message,
+//                                 }]
+//                             },
+//                         ]
+//                     }
+//                 }
+//             }]
+//         }
+//     }
+
+
+//     try {
+//         const response = await axios.post(url, data, {
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             }
+//         });
+//         console.log('Message sent successfully:', response);
+//         console.log('Message sent successfully:', response.data);
+//         // res.send({ success: true, message: response.data })
+//     } catch (error) {
+//         console.error('Error sending message:', error.response ? error.response.data : error.message);
+//     }
+// }
+
+export { addFBLead, addFBLeadInternational, FBLeadNational, FBLeadInternational, ozentolCall, getFBLeadCounts }
