@@ -2,6 +2,7 @@ import { FBLead } from "../models/facebookLead.model.js";
 import nodemailer from 'nodemailer'
 import axios from 'axios'
 import { checkTimezone } from "../services/fbleadservice.js";
+import { sendMessageToSocketId } from "../server.js";
 
 const addFBLead = async (req, res) => {
 
@@ -386,14 +387,14 @@ const addFBLeadInternational = async (req, res) => {
         let formnameVal = formname.toLowerCase();
         // let campaign = "Ivr_Common";
         let campaign = "Common_Ivr"
-        const isAllowed = checkTimezone(emailtitle)
+        // const isAllowed = checkTimezone(emailtitle)
 
-        console.log(isAllowed)
+        // console.log(isAllowed)
 
-        if (isAllowed) {
-            // Send campaign details
-            await sendOzentolInternational(contact, campaign);
-        }
+        // if (isAllowed) {
+        //     // Send campaign details
+        //     await sendOzentolInternational(contact, campaign);
+        // }
 
 
         // Handle address
