@@ -66,7 +66,7 @@ const addFBLead = async (req, res) => {
 
         // Send campaign details
         const response = await sendOzentol(number, campaign);
-        if (response.status === "SUCCESS") {
+        if (response.status == "SUCCESS") {
             callinitiated = 1;
         }
 
@@ -101,6 +101,7 @@ const addFBLead = async (req, res) => {
             state: address?.stateVal,
             country: address?.countryVal,
             countrysource: "national",
+            callinitiated,
         });
 
         // save lead
@@ -217,7 +218,8 @@ const addFBLeadInternational = async (req, res) => {
         if (isAllowed) {
             // Send campaign details
             const response = await sendOzentolInternational(contact, campaign);
-            if (response.status === "SUCCESS") {
+            console.log(response)
+            if (response?.status === "SUCCESS") {
                 callinitiated = 1;
             }
         }
@@ -402,13 +404,13 @@ cron.schedule("0 9 * * *", async () => {
 
     // Set the start time (8:00 AM IST)
     const startTime = new Date(nowIST);
-    startTime.setHours(8, 0, 0, 0); // 8:00 AM IST
+    startTime.setHours(20, 0, 0, 0); // 8:00 AM IST
     console.log("Start Time:", startTime);
     console.log("Start Time:", startTime.getHours());
 
     // Set the end time (8:00 PM IST)
     const endTime = new Date(nowIST);
-    endTime.setHours(20, 0, 0, 0); // 8:00 PM IST
+    endTime.setHours(8, 0, 0, 0); // 8:00 PM IST
     console.log("End Time:", endTime);
     console.log("End Time:", endTime.getHours());
 
@@ -441,13 +443,13 @@ cron.schedule("0 21 * * *", async () => {
 
     // Set the start time (8:00 PM IST)
     const startTime = new Date(nowIST);
-    startTime.setHours(20, 0, 0, 0); // 8:00 PM IST
+    startTime.setHours(8, 0, 0, 0); // 8:00 PM IST
     console.log("Start Time:", startTime);
     console.log("Start Time:", startTime.getHours());
 
     // Set the end time (8:00 AM IST)
     const endTime = new Date(nowIST);
-    endTime.setHours(8, 0, 0, 0); // 8:00 AM IST
+    endTime.setHours(20, 0, 0, 0); // 8:00 AM IST
     console.log("End Time:", endTime);
     console.log("End Time:", endTime.getHours());
 
