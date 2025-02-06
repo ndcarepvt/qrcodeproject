@@ -369,11 +369,11 @@ const getFBLeadCounts = async (req, res) => {
     res.send("Lead count cron jobs scheduled at 9:00 AM & 9:00 PM.");
 }
 
+
 // Function to get lead counts for the given time range
 const getLeadCounts = async (startTime, endTime) => {
-    console.log("Fetching lead counts for the given time range:", startTime, endTime);
+    console.log("Fetching lead counts for:", startTime, "to", endTime);
     try {
-        // Adjust createdAt to be in UTC for querying
         const nationalCount = await FBLead.countDocuments({
             createdAt: { $gte: startTime, $lt: endTime },
             countrysource: "national",
@@ -391,83 +391,74 @@ const getLeadCounts = async (startTime, endTime) => {
     }
 };
 
-// Schedule the 9:00 AM message (fetching data from 8:00 PM to 8:00 AM IST)
-cron.schedule("0 9 * * *", async () => {
-    console.log("Fetching lead counts for Day Shift (8:00 AM - 8:00 PM IST)");
-
-    // Get the current time in UTC
-    const nowUTC = new Date();
-
-    // Adjust to IST by adding 5 hours 30 minutes
+// Helper function to adjust time ranges correctly
+const getTimeRangeUTC = (startHourIST, endHourIST, adjustPreviousDay = false) => {
     const ISTOffset = 5.5 * 60 * 60 * 1000;
+
+    // Current time in IST
+    const nowUTC = new Date();
     const nowIST = new Date(nowUTC.getTime() + ISTOffset);
 
-    // Set the start time (8:00 AM IST)
-    const startTime = new Date(nowIST);
-    startTime.setHours(20, 0, 0, 0); // 8:00 AM IST
-    console.log("Start Time:", startTime);
-    console.log("Start Time:", startTime.getHours());
+    // Set the start time in IST
+    const startTimeIST = new Date(nowIST);
+    if (adjustPreviousDay) {
+        startTimeIST.setDate(nowIST.getDate() - 1);
+    }
+    startTimeIST.setHours(startHourIST, 0, 0, 0);
 
-    // Set the end time (8:00 PM IST)
-    const endTime = new Date(nowIST);
-    endTime.setHours(8, 0, 0, 0); // 8:00 PM IST
-    console.log("End Time:", endTime);
-    console.log("End Time:", endTime.getHours());
+    // Set the end time in IST
+    const endTimeIST = new Date(nowIST);
+    endTimeIST.setHours(endHourIST, 0, 0, 0);
 
-    // Convert startTime and endTime to UTC for querying
-    const startTimeUTC = new Date(startTime.getTime() - ISTOffset);
-    const endTimeUTC = new Date(endTime.getTime() - ISTOffset);
+    // Convert to UTC for querying MongoDB
+    const startTimeUTC = new Date(startTimeIST.getTime() - ISTOffset);
+    const endTimeUTC = new Date(endTimeIST.getTime() - ISTOffset);
 
-    console.log("Start Time (UTC):", startTimeUTC);
-    console.log("End Time (UTC):", endTimeUTC);
+    return { startTimeUTC, endTimeUTC };
+};
 
-    const { nationalCount, internationalCount } = await getLeadCounts(startTimeUTC, endTimeUTC);
-    console.log("National Count:", nationalCount);
-    console.log("International Count:", internationalCount);
-    const counts = { total: nationalCount + internationalCount, national: nationalCount, international: internationalCount };
-    const time = { startTime: startTime.getHours(), endTime: endTime.getHours() };
-    FBLeadMailReport(counts, time);
-    // await sendEmail("Day (8 AM - 8 PM)", nationalCount, internationalCount);
+// 🕘 9:00 AM IST: Fetch data for 8:00 PM - 8:00 AM shift
+cron.schedule("30 3 * * *", async () => {
+    console.log("Fetching lead counts for Night Shift (8:00 PM - 8:00 AM IST)");
+
+    try {
+        const { startTimeUTC, endTimeUTC } = getTimeRangeUTC(20, 8, true);
+
+        console.log("Start Time (UTC):", startTimeUTC);
+        console.log("End Time (UTC):", endTimeUTC);
+
+        const { nationalCount, internationalCount } = await getLeadCounts(startTimeUTC, endTimeUTC);
+        console.log("National Count:", nationalCount);
+        console.log("International Count:", internationalCount);
+
+        const counts = { total: nationalCount + internationalCount, national: nationalCount, international: internationalCount };
+        FBLeadMailReport(counts, { startTime: 20, endTime: 8 });
+    } catch (error) {
+        console.error("Error fetching lead counts:", error);
+    }
 });
 
-// Schedule the 9:00 PM message (fetching data from 8:00 AM to 8:00 PM IST)
-cron.schedule("0 21 * * *", async () => {
+// 🕘 9:00 PM IST: Fetch data for 8:00 AM - 8:00 PM shift
+cron.schedule("30 15 * * *", async () => {
     console.log("Fetching lead counts for Day Shift (8:00 AM - 8:00 PM IST)");
 
-    // Get the current time in UTC
-    const nowUTC = new Date();
+    try {
+        const { startTimeUTC, endTimeUTC } = getTimeRangeUTC(8, 20);
 
-    // Adjust to IST by adding 5 hours 30 minutes
-    const ISTOffset = 5.5 * 60 * 60 * 1000;
-    const nowIST = new Date(nowUTC.getTime() + ISTOffset);
+        console.log("Start Time (UTC):", startTimeUTC);
+        console.log("End Time (UTC):", endTimeUTC);
 
-    // Set the start time (8:00 PM IST)
-    const startTime = new Date(nowIST);
-    startTime.setHours(8, 0, 0, 0); // 8:00 PM IST
-    console.log("Start Time:", startTime);
-    console.log("Start Time:", startTime.getHours());
+        const { nationalCount, internationalCount } = await getLeadCounts(startTimeUTC, endTimeUTC);
+        console.log("National Count:", nationalCount);
+        console.log("International Count:", internationalCount);
 
-    // Set the end time (8:00 AM IST)
-    const endTime = new Date(nowIST);
-    endTime.setHours(20, 0, 0, 0); // 8:00 AM IST
-    console.log("End Time:", endTime);
-    console.log("End Time:", endTime.getHours());
-
-    // Convert startTime and endTime to UTC for querying
-    const startTimeUTC = new Date(startTime.getTime() - ISTOffset);
-    const endTimeUTC = new Date(endTime.getTime() - ISTOffset);
-
-    console.log("Start Time (UTC):", startTimeUTC);
-    console.log("End Time (UTC):", endTimeUTC);
-
-    const { nationalCount, internationalCount } = await getLeadCounts(startTimeUTC, endTimeUTC);
-    console.log("National Count:", nationalCount);
-    console.log("International Count:", internationalCount);
-    const counts = { total: nationalCount + internationalCount, national: nationalCount, international: internationalCount };
-    const time = { startTime: startTime.getHours(), endTime: endTime.getHours() };
-    FBLeadMailReport(counts, time);
-    // await sendEmail("Day (8 AM - 8 PM)", nationalCount, internationalCount);
+        const counts = { total: nationalCount + internationalCount, national: nationalCount, international: internationalCount };
+        FBLeadMailReport(counts, { startTime: 8, endTime: 20 });
+    } catch (error) {
+        console.error("Error fetching lead counts:", error);
+    }
 });
+
 
 
 // const sendWhatsappMessage = async (nationalCount, internationalCount) => {
