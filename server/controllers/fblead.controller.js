@@ -211,18 +211,18 @@ const addFBLeadInternational = async (req, res) => {
         // let campaign = "Ivr_Common";
         let campaign = "Common_Ivr"
         let callinitiated = 0;
-        const isAllowed = checkTimezone(emailtitle)
+        // const isAllowed = checkTimezone(emailtitle)
 
-        console.log(isAllowed)
+        // console.log(isAllowed)
 
-        if (isAllowed) {
-            // Send campaign details
-            const response = await sendOzentolInternational(contact, campaign);
-            console.log(response)
-            if (response?.status === "SUCCESS") {
-                callinitiated = 1;
-            }
-        }
+        // if (isAllowed) {
+        //     // Send campaign details
+        //     const response = await sendOzentolInternational(contact, campaign);
+        //     console.log(response)
+        //     if (response?.status === "SUCCESS") {
+        //         callinitiated = 1;
+        //     }
+        // }
 
 
         // Handle address
@@ -370,26 +370,26 @@ const getFBLeadCounts = async (req, res) => {
 }
 
 
-// Function to get lead counts for the given time range
-const getLeadCounts = async (startTime, endTime) => {
-    console.log("Fetching lead counts for:", startTime, "to", endTime);
-    try {
-        const nationalCount = await FBLead.countDocuments({
-            createdAt: { $gte: startTime, $lt: endTime },
-            countrysource: "national",
-        });
+// // Function to get lead counts for the given time range
+// const getLeadCounts = async (startTime, endTime) => {
+//     console.log("Fetching lead counts for:", startTime, "to", endTime);
+//     try {
+//         const nationalCount = await FBLead.countDocuments({
+//             createdAt: { $gte: startTime, $lt: endTime },
+//             countrysource: "national",
+//         });
 
-        const internationalCount = await FBLead.countDocuments({
-            createdAt: { $gte: startTime, $lt: endTime },
-            countrysource: "international",
-        });
+//         const internationalCount = await FBLead.countDocuments({
+//             createdAt: { $gte: startTime, $lt: endTime },
+//             countrysource: "international",
+//         });
 
-        return { nationalCount, internationalCount };
-    } catch (error) {
-        console.error("Error fetching lead counts:", error);
-        return { nationalCount: 0, internationalCount: 0 };
-    }
-};
+//         return { nationalCount, internationalCount };
+//     } catch (error) {
+//         console.error("Error fetching lead counts:", error);
+//         return { nationalCount: 0, internationalCount: 0 };
+//     }
+// };
 
 // Helper function to adjust time ranges correctly
 const getTimeRangeUTC = (startHourIST, endHourIST, adjustPreviousDay = false) => {
