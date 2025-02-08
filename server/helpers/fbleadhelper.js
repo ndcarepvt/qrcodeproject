@@ -54,6 +54,9 @@ export const FBLeadMail = async (lead, emailtitle) => {
     if (formname.includes('kidney')) {
         emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in, fbleads05@gmail.com"
     }
+    if (formname.includes('autism')) {
+        emailList = "githubndcare@gmail.com, raghav@nirogamusa.in"
+    }
 
     // if(lead.adincharge == "Naman"){
     //     emailList = "githubndcare@gmail.com, leadsfb78@gmail.com, raghav@nirogamusa.in"
