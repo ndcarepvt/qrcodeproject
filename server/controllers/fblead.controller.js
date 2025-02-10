@@ -211,18 +211,20 @@ const addFBLeadInternational = async (req, res) => {
         // let campaign = "Ivr_Common";
         let campaign = "Common_Ivr"
         let callinitiated = 0;
-        // const isAllowed = checkTimezone(emailtitle)
+        if (formnameVal.includes("ghana")) {
+            // const isAllowed = checkTimezone(emailtitle)
 
-        // console.log(isAllowed)
+            // console.log(isAllowed)
 
-        // if (isAllowed) {
-        //     // Send campaign details
-        //     const response = await sendOzentolInternational(contact, campaign);
-        //     console.log(response)
-        //     if (response?.status === "SUCCESS") {
-        //         callinitiated = 1;
-        //     }
-        // }
+            // if (isAllowed) {
+            //     // Send campaign details
+            //     const response = await sendOzentolInternational(contact, campaign);
+            //     console.log(response)
+            //     if (response?.status === "SUCCESS") {
+            //         callinitiated = 1;
+            //     }
+            // }
+        }
 
 
         // Handle address

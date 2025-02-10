@@ -22,6 +22,7 @@ function isWithinBusinessHours(timeZone) {
 }
 
 // Function to determine the timezone based on form name
+
 export const checkTimezone = (formname) => {
     let singleTimeZone;
     let formName = formname.toLowerCase(); // Fixed typo here
@@ -34,12 +35,13 @@ export const checkTimezone = (formname) => {
         singleTimeZone = "Europe/London";
     } else if (formName.includes('usa')) {
         singleTimeZone = "America/New_York"; // USA generally uses "America/New_York"
+    } else if (formName.includes('ghana')) {
+        singleTimeZone = "Africa/Accra"; // Corrected timezone for Ghana
     } else {
         console.error(`No timezone matched for form name: ${formName}`);
         return;
     }
     
-
     console.log(`Determined timezone: ${singleTimeZone}`);
 
     const isAllowed = isWithinBusinessHours(singleTimeZone);
