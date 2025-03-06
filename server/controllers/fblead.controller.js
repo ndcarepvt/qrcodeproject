@@ -82,10 +82,16 @@ const addFBLead = async (req, res) => {
         };
 
         // Submit CRM data
-        const CRMResult = await onCRMDataSubmit(crmData, formnameLower);
+        const { CRMResult, enqId } = await onCRMDataSubmit(crmData, formnameLower);
 
-        // Handle address
-        const address = await onAddressHandler(city);
+        // const data = {
+        //     enq_code: enqId,
+        //     username: "auto",
+        //     ext: "fb"
+        // };
+
+        // await updateRemarksDPR(data)
+
 
         // Prepare lead data
         const leadData = new FBLead({
@@ -98,8 +104,7 @@ const addFBLead = async (req, res) => {
             platform: platform,
             formname: formnameVal,
             adincharge,
-            state: address?.stateVal,
-            country: address?.countryVal,
+            patientCode: enqId,
             countrysource: "national",
             callinitiated,
         });
@@ -202,7 +207,7 @@ const addFBLeadInternational = async (req, res) => {
         const formnameLower = formname.toLowerCase();
 
         // Submit CRM data and save lead
-        const CRMResult = await onCRMDataSubmit(crmData, formnameLower);
+        const { CRMResult, enqId } = await onCRMDataSubmit(crmData, formnameLower);
 
         // Determine form name and campaign
         let formnameVal = formname.toLowerCase();
@@ -212,7 +217,7 @@ const addFBLeadInternational = async (req, res) => {
         let campaign = "Common_Ivr"
         let callinitiated = 0;
 
-        const isAllowed = checkTimezone(emailtitle)
+        const { isAllowed, time } = checkTimezone(emailtitle)
 
         console.log(isAllowed)
 
@@ -226,7 +231,7 @@ const addFBLeadInternational = async (req, res) => {
         }
 
         // Handle address
-        const address = await onAddressHandler(city);
+        // const address = await onAddressHandler(city);
 
 
         // Prepare lead data
@@ -240,10 +245,10 @@ const addFBLeadInternational = async (req, res) => {
             platform: platform,
             formname: formnameVal,
             adincharge,
-            state: address?.stateVal,
-            country: address?.countryVal,
+            patientCode: enqId || "0",
             countrysource: "international",
             callinitiated,
+            countryTime: time
         });
 
         // save lead
@@ -303,8 +308,6 @@ const FBLeadNational = async (req, res) => {
 };
 
 
-
-
 const FBLeadInternational = async (req, res) => {
     const { userId } = req.body;
 
@@ -341,8 +344,6 @@ const FBLeadInternational = async (req, res) => {
 };
 
 
-
-
 const ozentolCall = async (req, res) => {
     const url = "https://api1.getkookoo.com/CAServices/AgentManualDial.php?api_key=KK4d7f41a640fc1c736f1d36e89212e60f&username=ndayurveda&agentID=QCD&campaignName=Tollfree_18886245925&customerNumber=14077770062&UCID=true&uui=%7B3%7D";
 
@@ -368,6 +369,37 @@ const ozentolCall = async (req, res) => {
 const getFBLeadCounts = async (req, res) => {
     res.send("Lead count cron jobs scheduled at 9:00 AM & 9:00 PM.");
 }
+
+const getFBLeadDateFilter = async (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    try {
+        // Ensure startDate and endDate are properly formatted as Date objects
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        console.log(start, end)
+
+        // Validate if dates are valid
+        if (isNaN(start) || isNaN(end)) {
+            return res.status(400).json({ success: false, message: "Invalid date format" });
+        }
+
+        const response = await FBLead.find({
+            createdAt: {
+                $gte: start,
+                $lte: end
+            }
+        });
+
+        console.log(response);
+
+        return res.json({ success: true, message: "Facebook Lead Fetch Successful", data: response });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Error fetching data" });
+    }
+};
+
 
 
 // // Function to get lead counts for the given time range
@@ -459,8 +491,6 @@ cron.schedule("30 15 * * *", async () => {
     }
 });
 
-
-
 // const sendWhatsappMessage = async (nationalCount, internationalCount) => {
 //     const apiKey = process.env.EXOTEL_API_KEY
 //     const apiToken = process.env.EXOTEL_API_TOKEN
@@ -517,4 +547,12 @@ cron.schedule("30 15 * * *", async () => {
 //     }
 // }
 
-export { addFBLead, addFBLeadInternational, FBLeadNational, FBLeadInternational, ozentolCall, getFBLeadCounts }
+export {
+    addFBLead,
+    addFBLeadInternational,
+    FBLeadNational,
+    FBLeadInternational,
+    ozentolCall,
+    getFBLeadCounts,
+    getFBLeadDateFilter
+}

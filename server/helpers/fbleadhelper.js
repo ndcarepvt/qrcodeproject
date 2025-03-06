@@ -8,20 +8,21 @@ export const onCRMDataSubmit = async (data, formname) => {
     let url = 'https://ndayurveda.info/api/query/facebook'
 
     try {
-        const response = axios.post(url, data)
-        if (response) {
-            console.log(response);
+        const response = await axios.post(url, data)
+        if (response.data?.success) {
+            console.log(response.data);
             console.log({ success: true, message: "Add Patient Lead Data in CRM" });
+            return {CRMResult : true, enqId : response.data?.enq_code}
         } else {
             console.log({ success: false, message: "Error : Add Patient Lead Data in CRM" });
-            console.log(response.data);
+            console.log(response?.data);
+            return {CRMResult : false, enqId : 0}
         }
 
-        return "true"
     } catch (error) {
         console.log({ success: false, message: "Error : Add Patient Lead Data in CRM" });
         console.log(error);
-        return "false"
+        return {CRMResult : false, enqId : 0}
     }
 }
 

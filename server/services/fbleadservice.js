@@ -1,3 +1,4 @@
+import axios from 'axios';
 import moment from 'moment-timezone';
 
 
@@ -12,9 +13,9 @@ function isWithinBusinessHours(timeZone) {
         const currentHour = localTime.hour();
 
         console.log(timeZone, currentHour);
-        
+
         // Calling hours: 8 AM to 8 PM
-        return currentHour >= 8 && currentHour < 20;
+        return { isAllowed: currentHour >= 8 && currentHour < 20, time: localTime }
     } catch (error) {
         console.error(`Error with time zone ${timeZone}:`, error.message);
         return false;
@@ -41,12 +42,26 @@ export const checkTimezone = (formname) => {
         console.error(`No timezone matched for form name: ${formName}`);
         return;
     }
-    
+
     console.log(`Determined timezone: ${singleTimeZone}`);
 
-    const isAllowed = isWithinBusinessHours(singleTimeZone);
-    console.log(`Call allowed in ${formname}: ${isAllowed}`);
-    return isAllowed;
+    const {isAllowed, time} = isWithinBusinessHours(singleTimeZone);
+    console.log(`Call allowed in ${formname}: ${isAllowed} : ${time}`);
+    return { isAllowed, time };
 };
 
+
+const updateRemarksDPR = async (data) => {
+
+    await axios.post('https://ndayurveda.info/api/crmdata/MakeCallAttempt', data, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        console.log('Response:', response.data);
+    })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
 
